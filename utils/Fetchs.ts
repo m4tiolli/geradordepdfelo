@@ -1,0 +1,74 @@
+import {
+  SetFormData,
+  SetMesesFatorFinanceiro,
+  FormData,
+} from "@/interfaces/Formulario";
+import axios from "axios";
+
+export const fetchMeses = async ({
+  setMesesFatorFinanceiro,
+}: SetMesesFatorFinanceiro) => {
+  try {
+    const response = await axios.get(
+      "/api/fatores-financeiros"
+    );
+    setMesesFatorFinanceiro(response.data);
+  } catch (error) {
+    console.error("Erro ao buscar meses do fator financeiro:", error);
+  }
+};
+
+export const fetchUsuario = async ({ setFormData }: SetFormData) => {
+  try {
+    const response = await axios.get("/api/perfil", {
+      headers: { authorization: localStorage.getItem("token") },
+    });
+    setFormData((prev) => ({
+      ...prev,
+      vendedor: response.data.nome,
+      emailVendedor: response.data.email,
+      telefone1Vendedor: response.data.telefone1,
+      telefone2Vendedor: response.data.telefone2,
+      departamentoVendedor: response.data.departamento,
+    }));
+  } catch (error) {
+    console.error("Erro ao buscar dados do vendedor:", error);
+  }
+};
+
+export const fetchUltimaProposta = async ({ setFormData }: SetFormData) => {
+  try {
+    const response = await axios.get("/api/proxima-proposta");
+    setFormData((prev) => ({
+      ...prev,
+      proposta: response.data.proposta,
+    }));
+  } catch (error) {
+    console.error("Erro ao buscar proposta:", error);
+  }
+};
+
+type SetformData = React.Dispatch<React.SetStateAction<FormData>>;
+export const consultarCNPJ = async ({
+  setFormData,
+  formData,
+}: {
+  setFormData: SetformData;
+  formData: FormData;
+}) => {
+  await axios
+    .get("https://api.cnpja.com/office/" + formData.cnpj, {
+      headers: {
+        Authorization:
+          "ffaafa01-3f8a-43eb-b361-6033430f3f98-55be84d3-2df7-4987-b151-49d9a0b6b0a6",
+      },
+    })
+    .then((response) => {
+      setFormData((prev) => ({
+        ...prev,
+        nomeEmpresa: response.data.alias,
+        razao: response.data.company.name,
+      }));
+    })
+    .catch((error) => console.error(error));
+};
