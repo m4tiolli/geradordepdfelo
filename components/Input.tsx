@@ -19,7 +19,7 @@ export default function Input({
 }: Readonly<InputProps>) {
   return (
     <input
-      className={`bg-[#ffffff0e] border transition-all ${
+      className={`bg-[#ffffff0e] border min-w-fit w-full transition-all ${
         value !== "" ? "border-[#ffffff]" : "border-[#ffffff27]"
       } outline-none text-sm rounded-md p-2 placeholder:text-[#ffffffa6] text-white ${
         invalid ? "invalid border-red-600" : ""

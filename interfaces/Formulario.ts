@@ -31,12 +31,21 @@ export interface FormData {
   telefone2Vendedor: string;
 }
 
+export interface Departamentos {
+  id: number
+  nome: string
+}
+
 export interface SetMesesFatorFinanceiro {
-  setMesesFatorFinanceiro: React.Dispatch<React.SetStateAction<FatoresFinanceiros[] | undefined>>
+  setMesesFatorFinanceiro: React.Dispatch<React.SetStateAction<FatoresFinanceiros[]>>
 }
 
 export interface SetFormData {
   setFormData: React.Dispatch<React.SetStateAction<FormData>>
+}
+
+export interface SetDepartamentos {
+  setDepartamentos: React.Dispatch<React.SetStateAction<Departamentos[]>>
 }
 
 export interface Inputs {

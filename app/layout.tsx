@@ -4,12 +4,15 @@ import "./globals.css";
 import Image from "next/image";
 import svg from "@/public/background.svg";
 import logofull from "@/public/logo-full.svg";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Gerador de Proposta",
   description: "Gerador de Proposta Elo Solutions",
+  icons: "logo.svg"
 };
 
 export default function RootLayout({
@@ -20,6 +23,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={"relative w-full h-dvh flex items-center justify-center flex-col" + inter.className}>
+      <ToastContainer />
         <Image
           draggable="false"
           src={svg}

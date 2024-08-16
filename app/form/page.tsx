@@ -4,8 +4,8 @@ import Input from "@/components/Input";
 import { useRouter } from "next/navigation";
 import { isTokenValid } from "@/utils/Auth";
 import { calcularValorTotal } from "@/utils/Calculos";
-import { FatoresFinanceiros, FormData } from "@/interfaces/Formulario";
-import { fetchMeses, fetchUltimaProposta, fetchUsuario } from "@/utils/Fetchs";
+import { Departamentos, FatoresFinanceiros, FormData } from "@/interfaces/Formulario";
+import { fetchDepartamentos, fetchMeses, fetchUltimaProposta, fetchUsuario } from "@/utils/Fetchs";
 import { handleSubmit, handleChange } from "@/utils/Handles";
 import { inputs } from "@/utils/Objetos";
 
@@ -37,10 +37,13 @@ const Form: React.FC = () => {
     telefone2Vendedor: "",
   });
 
+  const [departamentos, setDepartamentos] = useState<Departamentos[]>([])
+
   const [mesesFatorFinanceiro, setMesesFatorFinanceiro] =
-    useState<FatoresFinanceiros[]>();
+    useState<FatoresFinanceiros[]>([]);
 
   useEffect(() => {
+    fetchDepartamentos({setDepartamentos})
     fetchUltimaProposta({ setFormData });
     fetchUsuario({ setFormData });
     fetchMeses({ setMesesFatorFinanceiro });
@@ -55,7 +58,7 @@ const Form: React.FC = () => {
   const fatorFinanceiroId =
     mesesFatorFinanceiro?.find(
       (mes) => mes.meses == parseInt(formData.fatorFinanceiroMes)
-    )?.id || 1;
+    )?.id ?? 1;
 
   return (
     <main className="h-dvh w-full flex flex-col items-center justify-center z-10">
@@ -170,7 +173,45 @@ const Form: React.FC = () => {
                 Dados do comprador
               </p>
               {campos
-                .slice(4, 8)
+                .slice(4, 5)
+                .map(
+                  ({ name, value, onChange, placeholder, onBlur }, index) => (
+                    <Input
+                      key={index++}
+                      name={name}
+                      value={value}
+                      onChange={onChange}
+                      placeholder={placeholder}
+                      onBlur={onBlur}
+                    />
+                  )
+                )}
+                 <select
+                id="departamento"
+                name="departamento"
+                value={formData.departamento}
+                onChange={(e) => handleChange({ e, setFormData })}
+                className={`bg-[#ffffff0e] border transition-all ${
+                  formData.departamento !== ""
+                    ? "border-[#ffffff]"
+                    : "border-[#ffffff27]"
+                } outline-none text-sm rounded-md p-2 placeholder:text-[#ffffffa6] text-white appearance-none`}
+              >
+                <option className="text-[#38457a]" value="">
+                  Departamento
+                </option>
+                {departamentos?.map((departamento, index) => (
+                  <option
+                    className="text-[#38457a]"
+                    key={index++}
+                    value={departamento.nome}
+                  >
+                    {departamento.nome}
+                  </option>
+                ))}
+              </select>
+                {campos
+                .slice(6, 8)
                 .map(
                   ({ name, value, onChange, placeholder, onBlur }, index) => (
                     <Input

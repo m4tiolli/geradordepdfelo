@@ -1,11 +1,15 @@
-import { NextResponse } from "next/server";
-import { PDFDocument } from "pdf-lib";
-import jwt from "jsonwebtoken";
 import fs from "fs";
+import { NextRequest, NextResponse } from "next/server";
+import { PDFDocument } from "pdf-lib";
+import fontkit from "@pdf-lib/fontkit";
+import jwt from "jsonwebtoken";
 import path from "path";
-import { NextRequest } from "next/server";
 import { promiseConnection } from "@/utils/Connections";
 import { RowDataPacket } from "mysql2/promise";
+import { Client } from "basic-ftp";
+import { Readable } from "stream";
+import { fields } from "./fields";
+import { formatCNPJ, formatDate, formatValor } from "./formats";
 
 export async function POST(req: NextRequest) {
   try {
@@ -33,7 +37,6 @@ export async function POST(req: NextRequest) {
     } = await req.json();
 
     const token = req.headers.get("authorization")?.replace("Bearer ", "");
-
     if (!token) {
       return NextResponse.json(
         { auth: false, message: "No token provided" },
@@ -43,67 +46,121 @@ export async function POST(req: NextRequest) {
 
     const decoded: any = jwt.verify(token, "secret_key");
 
-    const pdfPath = path.resolve("./public/propostas/Template.pdf");
-    const pdfBytes = fs.readFileSync(pdfPath);
-    const pdfDoc = await PDFDocument.load(pdfBytes);
+    const mes =
+      fatorFinanceiroId == 1 ? "12" : fatorFinanceiroId == 2 ? "24" : "36";
 
-    const form = pdfDoc.getForm();
-    form.getTextField("Tomador").setText(tomador);
-    form.getTextField("Departamento").setText(departamento);
-    form.getTextField("Email").setText(email);
-    form.getTextField("Telefone").setText(telefone);
-    form.getTextField("Data").setText(data);
-    form.getTextField("DataExtensa").setText(dataFull);
-    form.getTextField("Proposta").setText(proposta);
-    form.getTextField("Empresa").setText(nomeEmpresa);
-    form.getTextField("RazaoSocial").setText(razao);
-    form.getTextField("CNPJ").setText(cnpj);
-    form.getTextField("Potencia").setText(potencia);
-    form.getTextField("ValorTotal").setText(valor.toString());
-    form.getTextField("Vendedor").setText(vendedor);
-    form.getTextField("DepartamentoVendedor").setText(departamentovendedor);
-    form.getTextField("EmailVendedor").setText(emailvendedor);
-    form.getTextField("Telefone1Vendedor").setText(telefone1vendedor);
-    form.getTextField("Telefone2Vendedor").setText(telefone2vendedor);
-    form.getTextField("Site").setText("www.elosolutions.com.br");
-
-    form.flatten();
-    const pdfBytesFilled = await pdfDoc.save();
-
-    const propostaNome = "Proposta_" + proposta;
-
-    const outputPath = path.resolve(
-      "./public/propostas/" + propostaNome + ".pdf"
-    );
-    fs.writeFileSync(outputPath, pdfBytesFilled);
-
-    const downloadLink = `${req.nextUrl.origin}/propostas/${propostaNome}.pdf`;
-    const ano = new Date().getFullYear();
-
-    const query =
-      "INSERT INTO propostas (ano, id_usuario, proposta, nomeEmpresa, razaoEmpresa, cnpjEmpresa, tomador, departamento, email, telefone, potencia, valor, fatorFinanceiro_id, meses, link_pdf, data, contaEnergia) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-
-    const [rows] = await promiseConnection.query<RowDataPacket[]>(query, [
-      ano,
-      decoded.id,
-      proposta,
-      nomeEmpresa,
-      razao,
-      cnpj,
+    const body = {
+      vendedor,
+      telefone1vendedor,
+      telefone2vendedor,
+      emailvendedor,
+      departamentovendedor,
       tomador,
       departamento,
       email,
       telefone,
+      data,
+      dataFull,
+      proposta,
+      nomeEmpresa,
+      razao,
+      cnpj,
       potencia,
       valor,
-      fatorFinanceiroId,
-      meses.toString(),
-      downloadLink,
-      data,
+      meses,
       valorContaEnergia,
-    ]);
+      fatorFinanceiroId,
+    };
 
-    return NextResponse.json({ downloadLink });
+    const pdfPath = path.resolve("./public/propostas/Template.pdf");
+    const pdfBytes = fs.readFileSync(pdfPath);
+    const pdfDoc = await PDFDocument.load(pdfBytes);
+    pdfDoc.registerFontkit(fontkit);
+
+    const fontLightBytes = fs.readFileSync(
+      path.resolve("app/api/gerar-pdf/SignikaNegative-Light.ttf")
+    );
+    const fontLight = await pdfDoc.embedFont(fontLightBytes);
+    const fontBoldBytes = fs.readFileSync(
+      path.resolve("app/api/gerar-pdf/SignikaNegative-Regular.ttf")
+    );
+    const fontBold = await pdfDoc.embedFont(fontBoldBytes);
+
+    const form = pdfDoc.getForm();
+
+    fields({
+      body,
+      fontBold,
+      fontLight,
+      formatDate,
+      formatCNPJ,
+      formatValor,
+    }).forEach(({ name, value, font, size }) => {
+      const field = form.getTextField(name);
+      field.setFontSize(size);
+      field.setText(value);
+      field.updateAppearances(font);
+    });
+
+    form.flatten();
+    const pdfBytesFilled = await pdfDoc.save();
+    proposta.replace(/ /g, "_");
+    const propostaNome = "Proposta_" + proposta;
+
+    const client = new Client();
+    try {
+      await client.access({
+        host: process.env.FTP_HOST,
+        user: process.env.FTP_USER,
+        password: process.env.FTP_PASSWORD,
+        secure: false,
+      });
+
+      const bufferStream = new Readable();
+      bufferStream.push(pdfBytesFilled);
+      bufferStream.push(null);
+
+      await client.uploadFrom(
+        bufferStream,
+        "/propostas/" + propostaNome + ".pdf"
+      );
+      console.log("PDF salvo com sucesso no servidor FTP!");
+
+      const downloadLink = `https://elosolutions.com.br/propostas/${propostaNome}.pdf`;
+
+      const ano = new Date().getFullYear();
+      const query =
+        "INSERT INTO propostas (ano, id_usuario, proposta, nomeEmpresa, razaoEmpresa, cnpjEmpresa, tomador, departamento, email, telefone, potencia, valor, fatorFinanceiro_id, meses, link_pdf, data, contaEnergia) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+      await promiseConnection.query<RowDataPacket[]>(query, [
+        ano,
+        decoded.id,
+        proposta,
+        nomeEmpresa,
+        razao,
+        cnpj,
+        tomador,
+        departamento,
+        email,
+        telefone,
+        potencia,
+        valor,
+        fatorFinanceiroId,
+        meses.toString(),
+        downloadLink,
+        data,
+        valorContaEnergia,
+      ]);
+
+      return NextResponse.json({ downloadLink });
+    } catch (error) {
+      console.error("Erro ao salvar PDF no FTP:", error);
+      return NextResponse.json(
+        { message: "Error saving PDF to FTP", error },
+        { status: 500 }
+      );
+    } finally {
+      client.close();
+    }
   } catch (error) {
     console.error("Error filling PDF:", error);
     return NextResponse.json(

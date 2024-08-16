@@ -2,6 +2,8 @@ import {
   SetFormData,
   SetMesesFatorFinanceiro,
   FormData,
+  SetDepartamentos,
+  Departamentos,
 } from "@/interfaces/Formulario";
 import axios from "axios";
 
@@ -45,6 +47,16 @@ export const fetchUltimaProposta = async ({ setFormData }: SetFormData) => {
     }));
   } catch (error) {
     console.error("Erro ao buscar proposta:", error);
+  }
+};
+
+export const fetchDepartamentos = async ({ setDepartamentos }: SetDepartamentos) => {
+  try {
+    const response = await axios.get("/api/departamentos");
+    const data: Departamentos[] = response.data;
+    setDepartamentos(data);
+  } catch (error) {
+    console.error("Erro ao buscar departamentos:", error);
   }
 };
 

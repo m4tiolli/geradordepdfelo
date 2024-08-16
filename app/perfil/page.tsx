@@ -92,11 +92,11 @@ function Perfil() {
   ];
 
   return (
-    <div className="flex flex-col items-center justify-center px-4 py-4 rounded-md w-fit h-fit gap-4 bg-[#38457a] z-10">
+    <div className="flex flex-col items-center justify-center px-4 py-4 rounded-md min-w-[90%] xl:min-w-[30vw] h-fit gap-4 bg-[#38457a] z-10">
       <h1 className="text-3xl font-semibold text-white">Dados do perfil</h1>
       <CgProfile className="text-white text-7xl" />
       {inputs.map(({ name, placeholder, value, onChange }, index) => (
-        <div className="-my-1" key={index++}>
+        <div className="-my-1 w-full" key={index++}>
           <p className="font-medium text-white text-md">{placeholder}</p>
           <Input
             name={name}
@@ -107,7 +107,7 @@ function Perfil() {
           />
         </div>
       ))}
-      <div className="flex justify-between w-[90%] w items-center">
+      <div className="flex justify-between w-full w items-center">
         <button
           className="text-[#38457a] font-semibold bg-white px-4 py-2 rounded-md w-[45%] transition-all hover:opacity-70"
           onClick={() => setEditing(true)}
