@@ -2,7 +2,7 @@ import {jwtDecode} from "jwt-decode";
 
 export const isTokenValid = (token?: string): boolean => {
   try {
-    const tokenToCheck = token || localStorage.getItem("token");
+    const tokenToCheck = token ?? localStorage.getItem("token");
     if (!tokenToCheck) {
       console.log("Token não encontrado");
       return false;
@@ -22,3 +22,9 @@ export const isTokenValid = (token?: string): boolean => {
     return false;
   }
 };
+
+export const getToken = () => {
+if(typeof window !== "undefined"){
+  return localStorage.getItem("token")
+}
+}

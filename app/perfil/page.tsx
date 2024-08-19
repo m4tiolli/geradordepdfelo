@@ -1,5 +1,6 @@
 "use client";
 import Input from "@/components/Input";
+import { getToken } from "@/utils/Auth";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -25,7 +26,7 @@ function Perfil() {
     email: "",
   });
   const [editing, setEditing] = useState(false);
-  const token = localStorage.getItem("token");
+  const token = getToken()
 
   useEffect(() => {
     async function BuscarDados() {
