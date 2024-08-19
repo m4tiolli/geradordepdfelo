@@ -25,7 +25,7 @@ function Perfil() {
     email: "",
   });
   const [editing, setEditing] = useState(false);
-  const token = localStorage.token;
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     async function BuscarDados() {
