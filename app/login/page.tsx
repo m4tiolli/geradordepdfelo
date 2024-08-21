@@ -2,7 +2,7 @@
 import ActivityIndicator from "@/components/ActivityIndicator";
 import Input from "@/components/Input";
 import { ShowToast } from "@/utils/Toast";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -49,7 +49,7 @@ function Login() {
       } else {
         console.error("Autenticação falhou.");
       }
-    } catch (error: AxiosError | any) {
+    } catch (error: any) {
       console.error("Erro ao realizar login:", error);
       const emailInvalid = error.response?.status === 404;
       const passwordInvalid = error.response?.status === 401;
@@ -104,7 +104,7 @@ function Login() {
         <h1 className="text-white font-semibold text-3xl">Login</h1>
         {inputs.map(
           ({ name, value, onChange, placeholder, invalid }, index) => (
-            <span key={index} className="relative w-full">
+            <span key={index++} className="relative w-full">
               <Input
                 name={name}
                 value={value}

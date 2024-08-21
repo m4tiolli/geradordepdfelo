@@ -6,6 +6,7 @@ interface InputProps {
   invalid?: boolean;
   disabled?: boolean;
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void
+  type?: string
 }
 
 export default function Input({
@@ -15,7 +16,8 @@ export default function Input({
   placeholder,
   invalid,
   disabled,
-  onBlur
+  onBlur,
+  type
 }: Readonly<InputProps>) {
   return (
     <input
@@ -28,7 +30,7 @@ export default function Input({
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      type={name == "senha" ? "password" : name == "data" ? "date" : "text"}
+      type={type ?? "text"}
       disabled={disabled}
       onBlur={onBlur}
     />

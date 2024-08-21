@@ -1,19 +1,12 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import Input from "@/components/Input";
+import { Usuario } from "@/interfaces/Usuario";
 import { getToken } from "@/utils/Auth";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CgProfile } from "react-icons/cg";
-
-interface Usuario {
-  id: number;
-  nome: string;
-  departamento: string;
-  telefone1: string;
-  telefone2: string;
-  email: string;
-}
 
 function Perfil() {
   const router = useRouter();
@@ -24,6 +17,8 @@ function Perfil() {
     telefone1: "",
     telefone2: "",
     email: "",
+    administrador: 0,
+    senha: "",
   });
   const [editing, setEditing] = useState(false);
   const token = getToken()

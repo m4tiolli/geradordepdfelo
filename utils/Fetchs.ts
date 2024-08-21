@@ -5,6 +5,7 @@ import {
   SetDepartamentos,
   Departamentos,
 } from "@/interfaces/Formulario";
+import { SetUsuario } from "@/interfaces/Usuario";
 import axios from "axios";
 
 export const fetchMeses = async ({
@@ -37,6 +38,17 @@ export const fetchUsuario = async ({ setFormData }: SetFormData) => {
     console.error("Erro ao buscar dados do vendedor:", error);
   }
 };
+
+export const fetchPrevilegios = async ({setUsuario}: SetUsuario) => {
+  try {
+    const response = await axios.get("/api/perfil", {
+      headers: { authorization: localStorage.getItem("token") },
+    });
+    return setUsuario(response.data);
+  } catch (error) {
+    console.error("Erro ao buscar dados do usuario:", error);
+  }
+}
 
 export const fetchUltimaProposta = async ({ setFormData }: SetFormData) => {
   try {
