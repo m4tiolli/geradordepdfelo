@@ -92,6 +92,7 @@ function Login() {
       onChange: handleChange,
       placeholder: "Senha",
       invalid: invalid.senha,
+      type: "password"
     },
   ];
 
@@ -103,7 +104,7 @@ function Login() {
       >
         <h1 className="text-white font-semibold text-3xl">Login</h1>
         {inputs.map(
-          ({ name, value, onChange, placeholder, invalid }, index) => (
+          ({ name, value, onChange, placeholder, invalid, type }, index) => (
             <span key={index++} className="relative w-full">
               <Input
                 name={name}
@@ -111,6 +112,7 @@ function Login() {
                 onChange={onChange}
                 placeholder={placeholder}
                 invalid={invalid}
+                type={type}
               />
               <p
                 className={`transition-all absolute -top-5 text-red-600 text-md font-semibold ${

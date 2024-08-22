@@ -4,10 +4,21 @@ import Input from "@/components/Input";
 import { useRouter } from "next/navigation";
 import { isTokenValid } from "@/utils/Auth";
 import { calcularValorTotal } from "@/utils/Calculos";
-import { Departamentos, FatoresFinanceiros, FormData } from "@/interfaces/Formulario";
-import { fetchDepartamentos, fetchMeses, fetchUltimaProposta, fetchUsuario } from "@/utils/Fetchs";
+import {
+  Departamentos,
+  FatoresFinanceiros,
+  FormData,
+} from "@/interfaces/Formulario";
+import {
+  fetchDepartamentos,
+  fetchMeses,
+  fetchUltimaProposta,
+  fetchUsuario,
+} from "@/utils/Fetchs";
 import { handleSubmit, handleChange } from "@/utils/Handles";
 import { inputs } from "@/utils/Objetos";
+import { Tooltip } from "@chakra-ui/react";
+import { IoMdHelpCircleOutline } from "react-icons/io";
 
 const Form: React.FC = () => {
   const router = useRouter();
@@ -37,13 +48,16 @@ const Form: React.FC = () => {
     telefone2Vendedor: "",
   });
 
-  const [departamentos, setDepartamentos] = useState<Departamentos[]>([])
+  const [calculado, setCalculado] = useState(false);
 
-  const [mesesFatorFinanceiro, setMesesFatorFinanceiro] =
-    useState<FatoresFinanceiros[]>([]);
+  const [departamentos, setDepartamentos] = useState<Departamentos[]>([]);
+
+  const [mesesFatorFinanceiro, setMesesFatorFinanceiro] = useState<
+    FatoresFinanceiros[]
+  >([]);
 
   useEffect(() => {
-    fetchDepartamentos({setDepartamentos})
+    fetchDepartamentos({ setDepartamentos });
     fetchUltimaProposta({ setFormData });
     fetchUsuario({ setFormData });
     fetchMeses({ setMesesFatorFinanceiro });
@@ -76,46 +90,63 @@ const Form: React.FC = () => {
               <p className="absolute -top-4 bg-[#38457a] px py text-md text-[#ffffffce] font-semibold left-2">
                 Dados da proposta
               </p>
-              <input
-                className={`bg-[#ffffff0e] border transition-all ${
-                  formData.proposta !== ""
-                    ? "border-[#ffffff]"
-                    : "border-[#ffffff27]"
-                } outline-none text-sm rounded-md p-2 placeholder:text-[#ffffffa6] text-white`}
-                name={"proposta"}
-                value={formData.proposta}
-                onChange={(e) => handleChange({ e, setFormData })}
-                placeholder={"Proposta"}
-                type="text"
-              />
-              <select
-                id="fatorFinanceiroMes"
-                name="fatorFinanceiroMes"
-                value={formData.fatorFinanceiroMes}
-                onChange={(e) => handleChange({ e, setFormData })}
-                className={`bg-[#ffffff0e] border transition-all ${
-                  formData.fatorFinanceiroMes !== ""
-                    ? "border-[#ffffff]"
-                    : "border-[#ffffff27]"
-                } outline-none text-sm rounded-md p-2 placeholder:text-[#ffffffa6] text-white appearance-none`}
-              >
-                <option className="text-[#38457a]" value="">
-                  Duração do contrato
-                </option>
-                {mesesFatorFinanceiro?.map((mes, index) => (
-                  <option
-                    className="text-[#38457a]"
-                    key={index++}
-                    value={mes.meses}
-                  >
-                    {mes.meses + " meses de contrato"}
+              <span className="relative flex items-center gap-2">
+                <input
+                  className={`bg-[#ffffff0e] border transition-all ${
+                    formData.proposta !== ""
+                      ? "border-[#ffffff]"
+                      : "border-[#ffffff27]"
+                  } outline-none text-sm rounded-md p-2 placeholder:text-[#ffffffa6] text-white`}
+                  name={"proposta"}
+                  value={formData.proposta}
+                  onChange={(e) => handleChange({ e, setFormData })}
+                  placeholder={"Proposta"}
+                  type="text"
+                />
+                <Tooltip label="Código da proposta" fontSize="md">
+                  <span>
+                    <IoMdHelpCircleOutline className="text-white text-2xl" />
+                  </span>
+                </Tooltip>
+              </span>
+              <span className="relative flex items-center gap-2">
+                <select
+                  id="fatorFinanceiroMes"
+                  name="fatorFinanceiroMes"
+                  value={formData.fatorFinanceiroMes}
+                  onChange={(e) => handleChange({ e, setFormData })}
+                  className={`bg-[#ffffff0e] border transition-all ${
+                    formData.fatorFinanceiroMes !== ""
+                      ? "border-[#ffffff]"
+                      : "border-[#ffffff27]"
+                  } outline-none text-sm rounded-md p-2 placeholder:text-[#ffffffa6] text-white appearance-none w-full`}
+                >
+                  <option className="text-[#38457a]" value="">
+                    Duração do contrato
                   </option>
-                ))}
-              </select>
+                  {mesesFatorFinanceiro?.map((mes, index) => (
+                    <option
+                      className="text-[#38457a]"
+                      key={index++}
+                      value={mes.meses}
+                    >
+                      {mes.meses + " meses de contrato"}
+                    </option>
+                  ))}
+                </select>
+                <Tooltip label="Duração do contrato da proposta" fontSize="md">
+                  <span>
+                    <IoMdHelpCircleOutline className="text-white text-2xl" />
+                  </span>
+                </Tooltip>
+              </span>
               {campos
                 .slice(0, 4)
                 .map(
-                  ({ name, value, onChange, placeholder, onBlur }, index) => (
+                  (
+                    { name, value, onChange, placeholder, onBlur, type, dica },
+                    index
+                  ) => (
                     <Input
                       key={index++}
                       name={name}
@@ -123,6 +154,8 @@ const Form: React.FC = () => {
                       onChange={onChange}
                       placeholder={placeholder}
                       onBlur={onBlur}
+                      type={type}
+                      dica={dica}
                     />
                   )
                 )}
@@ -134,7 +167,10 @@ const Form: React.FC = () => {
               {campos
                 .slice(8, 10)
                 .map(
-                  ({ name, value, onChange, placeholder, onBlur }, index) => (
+                  (
+                    { name, value, onChange, placeholder, onBlur, dica },
+                    index
+                  ) => (
                     <Input
                       key={index++}
                       name={name}
@@ -142,6 +178,7 @@ const Form: React.FC = () => {
                       onChange={onChange}
                       placeholder={placeholder}
                       onBlur={onBlur}
+                      dica={dica}
                     />
                   )
                 )}
@@ -156,7 +193,10 @@ const Form: React.FC = () => {
               {campos
                 .slice(10, 15)
                 .map(
-                  ({ name, value, onChange, placeholder, onBlur }, index) => (
+                  (
+                    { name, value, onChange, placeholder, onBlur, dica },
+                    index
+                  ) => (
                     <Input
                       key={index++}
                       name={name}
@@ -164,6 +204,7 @@ const Form: React.FC = () => {
                       onChange={onChange}
                       placeholder={placeholder}
                       onBlur={onBlur}
+                      dica={dica}
                     />
                   )
                 )}
@@ -175,7 +216,10 @@ const Form: React.FC = () => {
               {campos
                 .slice(4, 5)
                 .map(
-                  ({ name, value, onChange, placeholder, onBlur }, index) => (
+                  (
+                    { name, value, onChange, placeholder, onBlur, dica },
+                    index
+                  ) => (
                     <Input
                       key={index++}
                       name={name}
@@ -183,37 +227,52 @@ const Form: React.FC = () => {
                       onChange={onChange}
                       placeholder={placeholder}
                       onBlur={onBlur}
+                      dica={dica}
                     />
                   )
                 )}
-                 <select
-                id="departamento"
-                name="departamento"
-                value={formData.departamento}
-                onChange={(e) => handleChange({ e, setFormData })}
-                className={`bg-[#ffffff0e] border transition-all ${
-                  formData.departamento !== ""
-                    ? "border-[#ffffff]"
-                    : "border-[#ffffff27]"
-                } outline-none text-sm rounded-md p-2 placeholder:text-[#ffffffa6] text-white appearance-none`}
-              >
-                <option className="text-[#38457a]" value="">
-                  Departamento
-                </option>
-                {departamentos?.map((departamento, index) => (
-                  <option
-                    className="text-[#38457a]"
-                    key={index++}
-                    value={departamento.nome}
-                  >
-                    {departamento.nome}
+
+              <span className="relative flex items-center gap-2">
+                <select
+                  id="departamento"
+                  name="departamento"
+                  value={formData.departamento}
+                  onChange={(e) => handleChange({ e, setFormData })}
+                  className={`bg-[#ffffff0e] border transition-all ${
+                    formData.departamento !== ""
+                      ? "border-[#ffffff]"
+                      : "border-[#ffffff27]"
+                  } outline-none text-sm rounded-md p-2 placeholder:text-[#ffffffa6] text-white appearance-none w-full`}
+                >
+                  <option className="text-[#38457a]" value="">
+                    Departamento
                   </option>
-                ))}
-              </select>
-                {campos
+                  {departamentos?.map((departamento, index) => (
+                    <option
+                      className="text-[#38457a]"
+                      key={index++}
+                      value={departamento.nome}
+                    >
+                      {departamento.nome}
+                    </option>
+                  ))}
+                </select>
+                <Tooltip
+                  label="Departamento do comprador da proposta"
+                  fontSize="md"
+                >
+                  <span>
+                    <IoMdHelpCircleOutline className="text-white text-2xl" />
+                  </span>
+                </Tooltip>
+              </span>
+              {campos
                 .slice(6, 8)
                 .map(
-                  ({ name, value, onChange, placeholder, onBlur }, index) => (
+                  (
+                    { name, value, onChange, placeholder, onBlur, dica },
+                    index
+                  ) => (
                     <Input
                       key={index++}
                       name={name}
@@ -221,6 +280,7 @@ const Form: React.FC = () => {
                       onChange={onChange}
                       placeholder={placeholder}
                       onBlur={onBlur}
+                      dica={dica}
                     />
                   )
                 )}
@@ -230,30 +290,53 @@ const Form: React.FC = () => {
         <div className="flex items-center justify-start w-full gap-4">
           <button
             type="button"
-            onClick={() =>
+            onClick={() => {
               calcularValorTotal({
                 formData,
                 setFormData,
                 mesesFatorFinanceiro,
-              })
+              });
+              setCalculado(true);
+            }}
+            disabled={
+              formData.valorContaEnergia === "" || formData.potencia === "" || formData.fatorFinanceiroMes === ""
             }
-            className="bg-white text-[#38457a] px-4 py-2 transition-all hover:opacity-60 rounded-md font-semibold"
+            className={`bg-white text-[#38457a] px-4 py-2 transition-all hover:opacity-60 rounded-md font-semibold ${
+              formData.valorContaEnergia === "" || formData.potencia === "" || formData.fatorFinanceiroMes === ""
+                ? "cursor-not-allowed opacity-60"
+                : "cursor-pointer opacity-100"
+            }`}
           >
             Calcular
           </button>
-          <input
-            placeholder="Valor total do contrato"
-            value={formData.valorTotal}
-            onChange={(e) => handleChange({ e, setFormData })}
-            className={`bg-[#ffffff0e] border transition-all ${
-              formData.valorTotal != ""
-                ? "border-[#ffffff]"
-                : "border-[#ffffff27]"
-            } outline-none text-sm rounded-md p-2 w-full placeholder:text-[#ffffffa6] text-white`}
-          />
+          <span className="relative w-full flex items-center gap-2">
+            <input
+              placeholder="Valor total do contrato"
+              value={formData.valorTotal}
+              onChange={(e) => handleChange({ e, setFormData })}
+              className={`bg-[#ffffff0e] border transition-all ${
+                formData.valorTotal != ""
+                  ? "border-[#ffffff]"
+                  : "border-[#ffffff27]"
+              } outline-none text-sm rounded-md p-2 w-full placeholder:text-[#ffffffa6] text-white`}
+            />
+            <Tooltip
+              label="Valor total do contrato da proposta em R$"
+              fontSize="md"
+            >
+              <span>
+                <IoMdHelpCircleOutline className="text-white text-2xl" />
+              </span>
+            </Tooltip>
+          </span>
         </div>
         <button
-          className="text-[#38457a] bg-white px-4 py-2 w-full transition-all hover:opacity-60 rounded-md font-semibold"
+          disabled={!calculado}
+          className={`text-[#38457a] bg-white px-4 py-2 w-full transition-all hover:opacity-60 rounded-md font-semibold ${
+            !calculado
+              ? "cursor-not-allowed opacity-60"
+              : "cursor-pointer opacity-100"
+          }`}
           type="submit"
         >
           Gerar

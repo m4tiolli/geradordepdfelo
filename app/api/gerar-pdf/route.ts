@@ -110,9 +110,9 @@ export async function POST(req: NextRequest) {
     const client = new Client();
     try {
       await client.access({
-        host: process.env.FTP_HOST,
-        user: process.env.FTP_USER,
-        password: process.env.FTP_PASSWORD,
+        host: "77.37.127.193",
+        user: "u867338340.GeradorProposta1122",
+        password: "Elo@1122",
         secure: false,
       });
 
