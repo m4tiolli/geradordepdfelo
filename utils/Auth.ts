@@ -4,7 +4,6 @@ export const isTokenValid = (token?: string): boolean => {
   try {
     const tokenToCheck = token ?? localStorage.getItem("token");
     if (!tokenToCheck) {
-      console.log("Token não encontrado");
       return false;
     }
 
@@ -13,7 +12,6 @@ export const isTokenValid = (token?: string): boolean => {
     const currentTime = Math.floor(Date.now() / 1000);
 
     if (decodedToken.exp < currentTime) {
-      console.log("Token expirado");
       return false;
     }
     return true;

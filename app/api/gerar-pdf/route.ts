@@ -89,6 +89,7 @@ export async function POST(req: NextRequest) {
     const form = pdfDoc.getForm();
 
     fields({
+      mes,
       body,
       fontBold,
       fontLight,
@@ -147,7 +148,7 @@ export async function POST(req: NextRequest) {
         fatorFinanceiroId,
         meses.toString(),
         downloadLink,
-        data,
+        formatDate(body.data),
         valorContaEnergia,
       ]);
 

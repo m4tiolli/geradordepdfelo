@@ -53,7 +53,7 @@ function Perfil() {
     const { name, value } = e.target;
     setUsuario((prevState) => ({ ...prevState, [name]: value }));
   };
-
+  
   const inputs = [
     {
       name: "nome",

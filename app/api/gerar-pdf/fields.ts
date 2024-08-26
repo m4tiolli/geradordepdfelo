@@ -1,4 +1,5 @@
 export const fields = ({
+  mes,
   body,
   fontBold,
   fontLight,
@@ -49,7 +50,7 @@ export const fields = ({
     font: fontLight,
     size: 12,
   },
-  { name: "Meses", value: body.mes, font: fontLight, size: 12 },
+  { name: "Meses", value: mes, font: fontLight, size: 12 },
   {
     name: "Site",
     value: "www.elosolutions.com.br",

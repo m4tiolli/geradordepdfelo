@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import Input from "@/components/Input";
-import { getToken } from "@/utils/Auth";
+import { getToken, isTokenValid } from "@/utils/Auth";
 import { ShowToast } from "@/utils/Toast";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -22,6 +22,12 @@ function AlterarSenha() {
   });
   const token = getToken();
 
+  useEffect(() => {
+    if (!isTokenValid()) {
+      router.push("/login");
+    }
+  }, [token]);
+
   const AtualizarDados = () => {
     if (
       senhas.senhaNova !== senhas.confirmSenhaNova ||
@@ -38,9 +44,13 @@ function AlterarSenha() {
       return;
     }
     axios
-      .put("/api/senha/", {senha: senhas.senhaNova}, {
-        headers: { Authorization: token },
-      })
+      .put(
+        "/api/senha/",
+        { senha: senhas.senhaNova },
+        {
+          headers: { Authorization: token },
+        }
+      )
       .then(() => {
         ShowToast({
           text: "Senha alterada com sucesso",
@@ -48,7 +58,7 @@ function AlterarSenha() {
           options: {
             position: "top-center",
           },
-        })
+        });
         router.push("/");
       });
   };
