@@ -18,7 +18,6 @@ function Perfil() {
     telefone2: "",
     email: "",
     administrador: 0,
-    senha: "",
   });
   const [editing, setEditing] = useState(false);
   const token = getToken()
