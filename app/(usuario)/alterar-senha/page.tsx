@@ -5,8 +5,7 @@ import { getToken, isTokenValid } from "@/utils/Auth";
 import { ShowToast } from "@/utils/Toast";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { type } from "os";
-import { MouseEventHandler, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 
 function AlterarSenha() {

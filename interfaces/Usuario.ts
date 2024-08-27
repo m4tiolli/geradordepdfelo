@@ -1,4 +1,5 @@
 export interface Usuario {
+  id?: number;
   nome: string;
   departamento: string;
   telefone1: string;

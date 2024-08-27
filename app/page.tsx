@@ -50,20 +50,28 @@ export default function Home() {
       >
         Visualizar propostas
       </button>
-      <button
-        className="bg-[#38457a] text-white px-4 py-2 w-full transition-all hover:opacity-60 rounded-md font-semibold"
-        onClick={() => router.push("/perfil")}
-      >
-        Atualizar dados do usuário
-      </button>
       {usuario.administrador === 1 && (
+        <>
         <button
           className="bg-[#38457a] text-white px-4 py-2 w-full transition-all hover:opacity-60 rounded-md font-semibold"
           onClick={() => router.push("/cadastrar-usuario")}
         >
           Cadastrar usuário
         </button>
+        <button
+          className="bg-[#38457a] text-white px-4 py-2 w-full transition-all hover:opacity-60 rounded-md font-semibold"
+          onClick={() => router.push("/visualizar-usuario")}
+        >
+          Visualizar usuários
+        </button>
+        </>
       )}
+      <button
+        className="bg-[#38457a] text-white px-4 py-2 w-full transition-all hover:opacity-60 rounded-md font-semibold"
+        onClick={() => router.push("/perfil")}
+      >
+        Atualizar dados do perfil
+      </button>
       <button
         onClick={() => router.push("/alterar-senha")}
         className="bg-[#38457a] text-white px-4 py-2 w-full transition-all hover:opacity-60 rounded-md font-semibold"

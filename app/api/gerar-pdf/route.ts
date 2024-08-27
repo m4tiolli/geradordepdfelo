@@ -46,8 +46,14 @@ export async function POST(req: NextRequest) {
 
     const decoded: any = jwt.verify(token, "secret_key");
 
-    const mes =
-      fatorFinanceiroId == 1 ? "12" : fatorFinanceiroId == 2 ? "24" : "36";
+    let mes;
+    if (fatorFinanceiroId == 1) {
+      mes = "12";
+    } else if (fatorFinanceiroId == 2) {
+      mes = "24";
+    } else {
+      mes = "36";
+    }
 
     const body = {
       vendedor,
