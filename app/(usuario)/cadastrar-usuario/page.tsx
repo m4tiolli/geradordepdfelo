@@ -140,7 +140,7 @@ function CadastrarUsuario() {
         <Checkbox
           name="administrador"
           id="administrador"
-          checked={usuario.administrador}
+          checked={usuario.administrador as boolean}
           onChange={() =>
             setUsuario((prev) => ({
               ...prev,
