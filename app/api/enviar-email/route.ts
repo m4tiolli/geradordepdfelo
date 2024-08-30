@@ -1,19 +1,33 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
-export async function GET(req: Request) {
+export async function POST(req: Request) {
   try {
     const transporter = nodemailer.createTransport({
-      streamTransport: true,
-      newline: "windows",
+      host: "smtplw.com.br",
+      port: 587,
+      secure: false,
+      auth: {
+        user: "propostas@elosolutions.com.br",
+        pass: "GdP#Elo.2024",
+      },
     });
-    transporter.sendMail({
-      from: "gabriel.fernandes@elosolutions.com.br",
-      to: "gabriel.fernandes@elosolutions.com.br",
-      subject: "Teste de envio de email",
-      text: "Testando o envio de email pelo Nodemailer",
-    });
-    return NextResponse.json({ emailEnviado: true }, { status: 200 });
+    transporter.sendMail(
+      {
+        from: 'propostas@elosolutions.com.br',
+        to: "gabriel.fernandes@elosolutions.com.br",
+        subject: "Email de teste",
+        text: "Email de teste",
+        html: "<h1>Email de teste</h1>",
+      },
+      (err, info) => {
+        if (err) {
+          return NextResponse.json(err, { status: 500 });
+        } else {
+          return NextResponse.json({ mensagem: "Mensagem enviada" }, { status: 200 });
+        }
+      }
+    );
   } catch (error) {
     console.log(error);
     return NextResponse.json({ emailEnviado: false }, { status: 500 });
