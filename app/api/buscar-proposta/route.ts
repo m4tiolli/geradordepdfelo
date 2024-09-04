@@ -9,7 +9,7 @@ export async function GET(req: Request) {
  p.razaoEmpresa,
  p.cnpjEmpresa,
  p.tomador,
- p.departamento as departamentoTomador,
+ p.departamento AS departamentoTomador,
  p.email AS emailTomador,
  p.telefone AS telefoneTomador,
  p.potencia,
@@ -23,7 +23,10 @@ export async function GET(req: Request) {
  u.email AS emailVendedor,
  u.telefone1 AS telefone1Vendedor,
  u.telefone2 AS telefone2Vendedor
- FROM propostas AS p INNER JOIN usuario AS u WHERE p.id_usuario = u.id`
+ FROM propostas AS p 
+ INNER JOIN usuario AS u 
+ ON p.id_usuario = u.id`;
+
     const [rows] = await promiseConnection.query(query)
     return NextResponse.json(rows)
   } catch (erro) {
