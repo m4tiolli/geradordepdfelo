@@ -5,6 +5,8 @@ interface PropostaRow extends RowDataPacket {
   maxId: number | null;
 }
 
+export const revalidate = 0
+
 export async function GET(request: Request) {
   try {
     const anoAtual = new Date().getFullYear();
@@ -13,7 +15,7 @@ export async function GET(request: Request) {
       [anoAtual]
     );
 
-    const maxId = rows[0]?.maxId || 0;
+    const maxId = rows[0]?.maxId ?? 0;
     const proximoId = maxId + 1;
     const proposta = `ELOEF ${anoAtual}${String(proximoId).padStart(5, '0')}`;
 
