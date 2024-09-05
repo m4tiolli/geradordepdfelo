@@ -30,3 +30,5 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'Erro ao buscar propostas' }, { status: 500 });
   }
 }
+
+export const revalidate = 0

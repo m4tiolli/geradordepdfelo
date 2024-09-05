@@ -10,3 +10,5 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'Erro ao buscar usuarios' }, { status: 500 });
   }
 }
+
+export const revalidate = 0

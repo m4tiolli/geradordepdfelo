@@ -28,6 +28,8 @@ export async function GET(req: Request) {
   }
 }
 
+export const revalidate = 0
+
 export async function PUT(req: Request) {
   try {
     const token = req.headers.get('authorization')?.replace('Bearer ', '');
