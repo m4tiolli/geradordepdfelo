@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
       departamentovendedor,
       tomador,
       departamento,
-      email,
+      email: email.toLowerCase(),
       telefone,
       data,
       dataFull,

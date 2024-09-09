@@ -6,11 +6,12 @@ import { RowDataPacket } from "mysql2/promise";
 
 export async function POST(req: Request) {
   try {
-    const { email, senha } = await req.json();
+    const { email, senha }: { email: string, senha: string }
+      = await req.json();
 
     const query = "SELECT * FROM usuario WHERE email = ?";
     const [rows] = await promiseConnection.query<RowDataPacket[]>(query, [
-      email,
+      email.toLowerCase(),
     ]);
 
     if (rows.length === 0) {

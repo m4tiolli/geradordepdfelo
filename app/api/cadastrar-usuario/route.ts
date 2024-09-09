@@ -3,10 +3,11 @@ import { ResultSetHeader } from "mysql2";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer"
+import jwt from "jsonwebtoken";
 
 export async function POST(req: Request) {
   try {
-    const { nome, departamento, telefone1, telefone2, email, administrador } =
+    const { nome, departamento, telefone1, telefone2, email, administrador }: { nome: string, departamento: string, telefone1: string, telefone2: string, email: string, administrador: boolean } =
       await req.json();
 
     const senha = bcrypt.hashSync("Elo1234", 10);
@@ -21,6 +22,19 @@ export async function POST(req: Request) {
       administrador,
       senha,
     ]);
+
+    const [rows]: any = await promiseConnection.query<ResultSetHeader>(
+      "SELECT id FROM usuario WHERE email = ? AND nome = ?", [email.toLowerCase(), nome]
+    )
+
+    const id = rows[0].id
+
+    const token = jwt.sign({ id: id }, "secret_key", {
+      expiresIn: "1h",
+    });
+
+    const url = `https://geradordepdfelo.vercel.app/criar-senha?token=${token}`
+
     try {
       const transporter = nodemailer.createTransport({
         host: "email-ssl.com.br",
@@ -36,7 +50,7 @@ export async function POST(req: Request) {
           from: 'propostas@elosolutions.com.br',
           to: email,
           subject: "Finalização de Cadastro",
-          text: "Finalize seu cadastro no gerador de propostas! Clique no link e crie a sua senha. https://elosolutions.com.br",
+          text: "Finalize seu cadastro no gerador de propostas! Clique no link e crie a sua senha. " + url,
           html: `<table width="100%" cellspacing="0" cellpadding="0">
     <tr>
       <td>
@@ -49,7 +63,7 @@ export async function POST(req: Request) {
         <table cellspacing="0" cellpadding="0">
           <tr>
             <td style="border-radius: 5px;" bgcolor="#38457a; padding: 10">
-              <a href="https://elosolutions.com.br"
+              <a href="${url}"
                 style="color: #fff; background-color: #38457a; border-radius: 5px; padding: 10; font-weight: 600; font-family: 'Inter', sans-serif;text-decoration: none;">Criar
                 senha</a>
             </td>
@@ -76,3 +90,6 @@ export async function POST(req: Request) {
     );
   }
 }
+
+
+export const revalidate = 0

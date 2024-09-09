@@ -36,12 +36,14 @@ export default function RootLayout({
             src={svg}
             alt=" "
             className="absolute top-0 left-0 z-0 select-none"
+            priority
           />
           <Image
             draggable="false"
             src={svg}
             alt=" "
             className="absolute right-0 bottom-0 -scale-100 z-0 select-none"
+            priority
           />
           <Image
             draggable="false"
