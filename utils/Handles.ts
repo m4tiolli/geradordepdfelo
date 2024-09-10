@@ -22,6 +22,7 @@ export const handleSubmit = async ({
   e,
   formData,
   fatorFinanceiroId,
+  elo
 }: HandleSubmit) => {
   e.preventDefault();
   const dados = {
@@ -45,6 +46,7 @@ export const handleSubmit = async ({
     meses: formData.fatorFinanceiroMes,
     valorContaEnergia: formData.valorContaEnergia,
     fatorFinanceiroId: fatorFinanceiroId,
+    elo: elo
   };
   try {
     console.log(dados);

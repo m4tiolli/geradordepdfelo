@@ -63,4 +63,5 @@ export interface HandleSubmit {
   e: React.FormEvent
   formData: FormData
   fatorFinanceiroId: number
+  elo: string
 }

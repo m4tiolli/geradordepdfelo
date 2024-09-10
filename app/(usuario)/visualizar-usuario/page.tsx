@@ -18,7 +18,7 @@ function VisualizarPropostas() {
   }, [])
 
   return (
-    <div className="flex flex-col w-2/5 gap-4 items-center justify-center relative z-20">
+    <div className="flex flex-col w-2/5 h-dvh gap-4 items-center justify-center relative z-20">
       <h1 className="font-semibold text-[#38457a] text-2xl">
         Visualizar Usuarios
       </h1>
@@ -41,9 +41,11 @@ function VisualizarPropostas() {
           </button>
         </div>
       </div>
-      {isLoading ? (<><ActivityIndicator /><h3>Carregando...</h3></>) : usuarios?.map((proposta, index) => (
-        <Usuario key={index++} {...proposta} />
-      ))}
+      <div className="flex flex-col items-center justify-start gap-4 scroll-m-[30dvh] h-[70dvh] overflow-y-scroll w-full">
+        {isLoading ? (<><ActivityIndicator /><h3>Carregando...</h3></>) : usuarios?.map((proposta, index) => (
+          <Usuario key={index++} {...proposta} />
+        ))}
+      </div>
     </div>
   );
 }

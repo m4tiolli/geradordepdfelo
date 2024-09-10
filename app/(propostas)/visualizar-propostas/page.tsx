@@ -130,9 +130,11 @@ function VisualizarPropostas() {
           </ModalFooter>
         </ModalContent>
       </Modal>
-      {isLoading ? (<><ActivityIndicator /><h3>Carregando...</h3></>) : propostas?.map((proposta, index) => (
-        <Proposta key={index++} {...proposta} />
-      ))}
+      <div className="flex flex-col items-center justify-start gap-4 scroll-m-[30dvh] h-[70dvh] overflow-y-scroll w-full">
+        {isLoading ? (<><ActivityIndicator /><h3>Carregando...</h3></>) : propostas?.map((proposta, index) => (
+          <Proposta key={index++} {...proposta} />
+        ))}
+      </div>
     </div>
   );
 }
