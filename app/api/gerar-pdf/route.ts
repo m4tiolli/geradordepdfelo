@@ -140,9 +140,11 @@ export async function POST(req: NextRequest) {
 
       const downloadLink = `https://elosolutions.com.br/propostas/${propostaNome}.pdf`;
 
+      const numeroProposta = (proposta as string).slice(-5)
+
       const ano = new Date().getFullYear();
       const query =
-        "INSERT INTO propostas (ano, id_usuario, proposta, nomeEmpresa, razaoEmpresa, cnpjEmpresa, tomador, departamento, email, telefone, potencia, valor, fatorFinanceiro_id, meses, link_pdf, data, contaEnergia, elo) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        "INSERT INTO propostas (ano, id_usuario, proposta, nomeEmpresa, razaoEmpresa, cnpjEmpresa, tomador, departamento, email, telefone, potencia, valor, fatorFinanceiro_id, meses, link_pdf, data, contaEnergia, elo, numeroProposta) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
       await promiseConnection.query<RowDataPacket[]>(query, [
         ano,
         decoded.id,
@@ -161,7 +163,8 @@ export async function POST(req: NextRequest) {
         downloadLink,
         formatDate(body.data),
         valorContaEnergia,
-        elo
+        elo,
+        parseInt(numeroProposta)
       ]);
 
       return NextResponse.json({ downloadLink });

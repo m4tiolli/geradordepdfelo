@@ -30,7 +30,7 @@
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #fff;
+  background: #e0e0e0;
   border-radius: 3px;
 }
 
@@ -38,6 +38,7 @@
 ::-webkit-scrollbar-thumb {
   background: #38457a;
   transition: all 0.3s linear;
+  border-radius: 3px;
 }
 
 /* Handle on hover */
@@ -46,5 +47,6 @@
 }
 
 .scroller {
-  width: calc(60vw + 10px);
+  width: calc(60vw + 30px);
+  padding-right: 20px;
 }

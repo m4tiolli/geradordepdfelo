@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
   try {
-    const [rows] = await promiseConnection.query("SELECT * FROM departamentos ORDER BY id");
+    const [rows] = await promiseConnection.query("SELECT * FROM departamentos ORDER BY nome");
 
     return NextResponse.json(rows);
   } catch (error) {

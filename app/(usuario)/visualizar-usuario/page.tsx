@@ -171,7 +171,7 @@ function VisualizarUsuarios() {
       </Modal>
 
       {/* Lista de Usuários */}
-      <div className="flex scroller ml-[10px] flex-col items-center justify-start gap-4 scroll-m-[30dvh] h-[70dvh] overflow-y-scroll w-full">
+      <div className="flex scroller ml-[30px] flex-col items-center justify-start gap-4 scroll-m-[30dvh] h-[70dvh] overflow-y-scroll w-full">
         {isLoading ? (
           <>
             <ActivityIndicator />
