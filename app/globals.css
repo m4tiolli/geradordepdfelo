@@ -3,23 +3,48 @@
 @tailwind utilities;
 
 .invalid {
-  animation: invalid .4s ease-out
+  animation: invalid 0.4s ease-out;
 }
 
 @keyframes invalid {
-  0%{
-    transform: translateX(0)
+  0% {
+    transform: translateX(0);
   }
-  25%{
-    transform: translateX(5px)
+  25% {
+    transform: translateX(5px);
   }
   50% {
-    transform: translateX(0)
+    transform: translateX(0);
   }
   75% {
-    transform: translateX(-5px)
+    transform: translateX(-5px);
   }
-  100%{
-    transform: translateX(0)
+  100% {
+    transform: translateX(0);
   }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #fff;
+  border-radius: 3px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #38457a;
+  transition: all 0.3s linear;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  opacity: 0.8;
+}
+
+.scroller {
+  width: calc(60vw + 10px);
 }

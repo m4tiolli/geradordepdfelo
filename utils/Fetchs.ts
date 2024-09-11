@@ -39,7 +39,7 @@ export const fetchUsuario = async ({ setFormData }: SetFormData) => {
   }
 };
 
-export const fetchPrevilegios = async ({setUsuario}: SetUsuario) => {
+export const fetchPrevilegios = async ({ setUsuario }: SetUsuario) => {
   try {
     const response = await axios.get("/api/perfil", {
       headers: { authorization: localStorage.getItem("token") },
@@ -50,13 +50,10 @@ export const fetchPrevilegios = async ({setUsuario}: SetUsuario) => {
   }
 }
 
-export const fetchUltimaProposta = async ({ setFormData }: SetFormData) => {
+export const fetchUltimaProposta = async ({ setPropostas }: any) => {
   try {
     const response = await axios.get("/api/proxima-proposta");
-    setFormData((prev) => ({
-      ...prev,
-      proposta: response.data.proposta,
-    }));
+    setPropostas(response.data.proposta)
   } catch (error) {
     console.error("Erro ao buscar proposta:", error);
   }

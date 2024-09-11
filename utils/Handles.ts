@@ -22,9 +22,11 @@ export const handleSubmit = async ({
   e,
   formData,
   fatorFinanceiroId,
-  elo
+  elo,
+  setIsLoading
 }: HandleSubmit) => {
   e.preventDefault();
+  setIsLoading(true)
   const dados = {
     vendedor: formData.vendedor,
     telefone1vendedor: formData.telefone1Vendedor,
@@ -55,6 +57,7 @@ export const handleSubmit = async ({
     });
     const { downloadLink } = response.data;
     if (downloadLink) {
+      setIsLoading(false)
       window.location.href = downloadLink;
     } else {
       console.error("Link de download não encontrado na resposta.");

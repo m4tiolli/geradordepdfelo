@@ -1,4 +1,4 @@
-import fs from "fs";
+import fs, { PathOrFileDescriptor } from "fs";
 import { NextRequest, NextResponse } from "next/server";
 import { PDFDocument } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
@@ -34,6 +34,7 @@ export async function POST(req: NextRequest) {
       meses,
       valorContaEnergia,
       fatorFinanceiroId,
+      elo
     } = await req.json();
 
     const token = req.headers.get("authorization")?.replace("Bearer ", "");
@@ -78,8 +79,12 @@ export async function POST(req: NextRequest) {
       fatorFinanceiroId,
     };
 
-    const pdfPath = path.resolve("./public/propostas/Template.pdf");
-    const pdfBytes = fs.readFileSync(pdfPath);
+    const pdfPathRecuperadora = path.resolve("./public/propostas/TemplateRecuperadora.pdf")
+    const pdfPathServicos = path.resolve("./public/propostas/Template.pdf")
+
+    const pdfPath = elo === "R" ? pdfPathRecuperadora : pdfPathServicos
+
+    const pdfBytes = fs.readFileSync(pdfPath as PathOrFileDescriptor);
     const pdfDoc = await PDFDocument.load(pdfBytes);
     pdfDoc.registerFontkit(fontkit);
 
@@ -137,7 +142,7 @@ export async function POST(req: NextRequest) {
 
       const ano = new Date().getFullYear();
       const query =
-        "INSERT INTO propostas (ano, id_usuario, proposta, nomeEmpresa, razaoEmpresa, cnpjEmpresa, tomador, departamento, email, telefone, potencia, valor, fatorFinanceiro_id, meses, link_pdf, data, contaEnergia) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        "INSERT INTO propostas (ano, id_usuario, proposta, nomeEmpresa, razaoEmpresa, cnpjEmpresa, tomador, departamento, email, telefone, potencia, valor, fatorFinanceiro_id, meses, link_pdf, data, contaEnergia, elo) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
       await promiseConnection.query<RowDataPacket[]>(query, [
         ano,
         decoded.id,
@@ -156,6 +161,7 @@ export async function POST(req: NextRequest) {
         downloadLink,
         formatDate(body.data),
         valorContaEnergia,
+        elo
       ]);
 
       return NextResponse.json({ downloadLink });

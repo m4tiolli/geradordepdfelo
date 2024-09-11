@@ -1,29 +1,42 @@
 import { promiseConnection } from "@/utils/Connections";
 import { RowDataPacket } from "mysql2/promise";
+import { NextRequest, NextResponse } from "next/server";
 
 interface PropostaRow extends RowDataPacket {
   maxId: number | null;
 }
 
-export const revalidate = 0
+export const revalidate = 0;
 
-export async function GET(request: Request) {
+export async function GET(req: NextRequest) {
   try {
     const anoAtual = new Date().getFullYear();
-    const [rows] = await promiseConnection.query<PropostaRow[]>(
-      'SELECT MAX(id) as maxId FROM propostas WHERE ano = ?',
+
+    const [rowsServicos] = await promiseConnection.query<PropostaRow[]>(
+      'SELECT MAX(id) AS maxIdServicos FROM propostas WHERE ano = ? AND elo = \'S\'',
       [anoAtual]
     );
 
-    const maxId = rows[0]?.maxId ?? 0;
-    const proximoId = maxId + 1;
-    const proposta = `ELOEF ${anoAtual}${String(proximoId).padStart(5, '0')}`;
+    const [rowsRecuperadora] = await promiseConnection.query<PropostaRow[]>(
+      'SELECT MAX(id) AS maxIdRecuperadora FROM propostas WHERE ano = ? AND elo = \'R\'',
+      [anoAtual]
+    );
 
-    return new Response(JSON.stringify({ proposta }), {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    const maxIdServicos = rowsServicos[0]?.maxIdServicos ?? 0;
+    const maxIdRecuperadora = rowsRecuperadora[0]?.maxIdRecuperadora ?? 0;
+
+    const proximoIdServicos = maxIdServicos + 1;
+    const proximoIdRecuperadora = maxIdRecuperadora + 1;
+
+    const propostaServicos = `ELOEF ${anoAtual}S${String(proximoIdServicos).padStart(5, '0')}`;
+    const propostaRecuperadora = `ELOEF ${anoAtual}R${String(proximoIdRecuperadora).padStart(5, '0')}`;
+
+    const proposta = { propostaRecuperadora, propostaServicos };
+
+    return NextResponse.json({ proposta });
   } catch (error) {
     console.error("Erro ao gerar a proposta:", error);
     return new Response("Erro ao gerar a proposta", { status: 500 });
   }
 }
+

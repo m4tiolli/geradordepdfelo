@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
+import ActivityIndicator from "@/components/ActivityIndicator";
 import Input from "@/components/Input";
 import { Departamentos } from "@/interfaces/Formulario";
 import { Usuario } from "@/interfaces/Usuario";
@@ -23,6 +24,7 @@ function CadastrarUsuario() {
     administrador: false,
   });
   const [departamentos, setDepartamentos] = useState<Departamentos[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const token = getToken();
   useEffect(() => {
     if (!isTokenValid()) {
@@ -31,7 +33,15 @@ function CadastrarUsuario() {
     fetchDepartamentos({ setDepartamentos });
   }, []);
 
+  const disabled =
+    usuario.nome == "" ||
+    usuario.departamento == "" ||
+    usuario.telefone1 == "" ||
+    usuario.telefone2 == "" ||
+    usuario.email == "";
+
   const CadastrarUsuario = () => {
+    setIsLoading(true);
     axios
       .post("/api/cadastrar-usuario/", usuario, {
         headers: { Authorization: token },
@@ -42,7 +52,16 @@ function CadastrarUsuario() {
           type: "success",
           options: { position: "top-center" },
         });
+        setIsLoading(false);
         router.push("/");
+      })
+      .catch(() => {
+        setIsLoading(false);
+        ShowToast({
+          text: "Erro ao cadastrar usuário.",
+          type: "error",
+          options: { position: "top-center" },
+        });
       });
   };
 
@@ -94,34 +113,34 @@ function CadastrarUsuario() {
             />
           </div>
         ))}
-        <div className="-my-1 w-full">
+      <div className="-my-1 w-full">
         <p className="font-medium text-white text-md">Departamento</p>
-      <select
-        id="departamento"
-        name="departamento"
-        value={usuario.departamento}
-        onChange={(e) =>
-          setUsuario((prev) => ({ ...prev, departamento: e.target.value }))
-        }
-        className={`bg-[#ffffff0e] border transition-all ${
-          usuario.departamento !== ""
-            ? "border-[#ffffff]"
-            : "border-[#ffffff27]"
-        } outline-none text-sm rounded-md p-2 placeholder:text-[#ffffffa6] text-white appearance-none w-full`}
-      >
-        <option className="text-[#38457a]" value="">
-          Departamento
-        </option>
-        {departamentos?.map((departamento, index) => (
-          <option
-            className="text-[#38457a]"
-            key={index++}
-            value={departamento.nome}
-          >
-            {departamento.nome}
+        <select
+          id="departamento"
+          name="departamento"
+          value={usuario.departamento}
+          onChange={(e) =>
+            setUsuario((prev) => ({ ...prev, departamento: e.target.value }))
+          }
+          className={`bg-[#ffffff0e] border transition-all ${
+            usuario.departamento !== ""
+              ? "border-[#ffffff]"
+              : "border-[#ffffff27]"
+          } outline-none text-sm rounded-md p-2 placeholder:text-[#ffffffa6] text-white appearance-none w-full`}
+        >
+          <option className="text-[#38457a]" value="">
+            Departamento
           </option>
-        ))}
-      </select>
+          {departamentos?.map((departamento, index) => (
+            <option
+              className="text-[#38457a]"
+              key={index++}
+              value={departamento.nome}
+            >
+              {departamento.nome}
+            </option>
+          ))}
+        </select>
       </div>
       {inputs
         .slice(1, 7)
@@ -164,10 +183,13 @@ function CadastrarUsuario() {
         </Tooltip>
       </div>
       <button
-        className={`text-green-800 font-semibold bg-white px-4 py-2 rounded-md w-full transition-all hover:opacity-70`}
+        className={`text-green-800 grid place-items-center font-semibold bg-white px-4 py-2 rounded-md w-full transition-all hover:opacity-70 ${
+          disabled ? "cursor-not-allowed opacity-60" : ""
+        }`}
         onClick={CadastrarUsuario}
+        disabled={disabled}
       >
-        Cadastrar usuário
+        {isLoading ? <ActivityIndicator /> : "Cadastrar usuário"}
       </button>
     </div>
   );

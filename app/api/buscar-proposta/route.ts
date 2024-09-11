@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 export async function GET(req: Request) {
   try {
     const query = `SELECT p.ano,
+    p.elo,
  p.proposta,
  p.nomeEmpresa,
  p.razaoEmpresa,

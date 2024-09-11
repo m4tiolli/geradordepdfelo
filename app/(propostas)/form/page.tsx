@@ -48,14 +48,27 @@ const Form: React.FC = () => {
     telefone1Vendedor: "",
     telefone2Vendedor: "",
   });
-
-  const [elo, setElo] = useState("servicos")
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [letra, setLetra] = useState("S");
   const [calculado, setCalculado] = useState(false);
+  const [propostas, setPropostas] = useState({
+    propostaRecuperadora: "",
+    propostaServicos: "",
+  });
 
   useEffect(() => {
-    setCalculado(!(Object.values(formData).some((item) => item === "")))
-  })
+    if (letra === "R") {
+      setFormData((prev) => ({
+        ...prev,
+        proposta: propostas.propostaRecuperadora,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        proposta: propostas.propostaServicos,
+      }));
+    }
+  }, [letra, propostas]);
 
   const [departamentos, setDepartamentos] = useState<Departamentos[]>([]);
 
@@ -65,7 +78,7 @@ const Form: React.FC = () => {
 
   useEffect(() => {
     fetchDepartamentos({ setDepartamentos });
-    fetchUltimaProposta({ setFormData });
+    fetchUltimaProposta({ setPropostas });
     fetchUsuario({ setFormData });
     fetchMeses({ setMesesFatorFinanceiro });
   }, []);
@@ -81,14 +94,43 @@ const Form: React.FC = () => {
       (mes) => mes.meses == parseInt(formData.fatorFinanceiroMes)
     )?.id ?? 1;
 
-  if (!departamentos || formData.proposta === "") {
-    return <ActivityIndicator />
+  if (!departamentos || Object.values(propostas).includes("")) {
+    return <ActivityIndicator />;
   }
+
+  const desativado =
+    formData.proposta === "" ||
+    formData.fatorFinanceiroMes === "" ||
+    formData.data === "" ||
+    formData.cnpj === "" ||
+    formData.razao === "" ||
+    formData.nomeEmpresa === "" ||
+    formData.potencia === "" ||
+    formData.valorContaEnergia === "" ||
+    formData.valorTotal === "" ||
+    formData.tomador === "" ||
+    formData.departamento === "" ||
+    formData.email === "" ||
+    formData.telefone === "" ||
+    formData.vendedor === "" ||
+    formData.emailVendedor === "" ||
+    formData.telefone1Vendedor === "" ||
+    formData.telefone2Vendedor === "" ||
+    formData.departamentoVendedor === "" ||
+    !calculado;
 
   return (
     <main className="h-dvh w-full flex flex-col items-center justify-center z-10">
       <form
-        onSubmit={(e) => handleSubmit({ e, formData, fatorFinanceiroId, elo })}
+        onSubmit={(e) =>
+          handleSubmit({
+            e,
+            formData,
+            fatorFinanceiroId,
+            elo: letra,
+            setIsLoading,
+          })
+        }
         className="flex flex-col z-10 items-center justify-center bg-[#38457a] px-4 py-4 rounded-md w-fit h-fit gap-4"
       >
         <h1 className="text-3xl text-white font-semibold">
@@ -96,12 +138,30 @@ const Form: React.FC = () => {
         </h1>
         <div className="border border-[#ffffff27] rounded-md px-4 py-2 w-full flex items-center gap-3 justify-start">
           <p className="text-white font-medium">Qual Cadastro da Elo: </p>
-          <label htmlFor="servicos" className="flex items-center gap-2 cursor-pointer text-white font-normal">
-            <input type="radio" name="servicos" id="servicos" checked={elo === "servicos"} onChange={() => setElo("servicos")} />
+          <label
+            htmlFor="servicos"
+            className="flex items-center gap-2 cursor-pointer text-white font-normal"
+          >
+            <input
+              type="radio"
+              name="servicos"
+              id="servicos"
+              checked={letra === "S"}
+              onChange={() => setLetra("S")}
+            />
             Serviços
           </label>
-          <label htmlFor="recuperadora" className="flex items-center gap-2 cursor-pointer text-white font-normal">
-            <input type="radio" name="recuperadora" id="recuperadora" checked={elo === "recuperadora"} onChange={() => setElo("recuperadora")} />
+          <label
+            htmlFor="recuperadora"
+            className="flex items-center gap-2 cursor-pointer text-white font-normal"
+          >
+            <input
+              type="radio"
+              name="recuperadora"
+              id="recuperadora"
+              checked={letra === "R"}
+              onChange={() => setLetra("R")}
+            />
             Recuperadora
           </label>
         </div>
@@ -114,10 +174,11 @@ const Form: React.FC = () => {
               </p>
               <span className="relative flex items-center gap-2">
                 <input
-                  className={`bg-[#ffffff0e] border transition-all ${formData.proposta !== ""
-                    ? "border-[#ffffff]"
-                    : "border-[#ffffff27]"
-                    } outline-none text-sm rounded-md p-2 placeholder:text-[#ffffffa6] text-white`}
+                  className={`bg-[#ffffff0e] border transition-all ${
+                    formData.proposta !== ""
+                      ? "border-[#ffffff]"
+                      : "border-[#ffffff27]"
+                  } outline-none text-sm rounded-md p-2 placeholder:text-[#ffffffa6] text-white`}
                   name={"proposta"}
                   value={formData.proposta}
                   onChange={(e) => handleChange({ e, setFormData })}
@@ -136,10 +197,11 @@ const Form: React.FC = () => {
                   name="fatorFinanceiroMes"
                   value={formData.fatorFinanceiroMes}
                   onChange={(e) => handleChange({ e, setFormData })}
-                  className={`bg-[#ffffff0e] border transition-all ${formData.fatorFinanceiroMes !== ""
-                    ? "border-[#ffffff]"
-                    : "border-[#ffffff27]"
-                    } outline-none text-sm rounded-md p-2 placeholder:text-[#ffffffa6] text-white appearance-none w-full`}
+                  className={`bg-[#ffffff0e] border transition-all ${
+                    formData.fatorFinanceiroMes !== ""
+                      ? "border-[#ffffff]"
+                      : "border-[#ffffff27]"
+                  } outline-none text-sm rounded-md p-2 placeholder:text-[#ffffffa6] text-white appearance-none w-full`}
                 >
                   <option className="text-[#38457a]" value="">
                     Duração do contrato
@@ -258,10 +320,11 @@ const Form: React.FC = () => {
                   name="departamento"
                   value={formData.departamento}
                   onChange={(e) => handleChange({ e, setFormData })}
-                  className={`bg-[#ffffff0e] border transition-all ${formData.departamento !== ""
-                    ? "border-[#ffffff]"
-                    : "border-[#ffffff27]"
-                    } outline-none text-sm rounded-md p-2 placeholder:text-[#ffffffa6] text-white appearance-none w-full`}
+                  className={`bg-[#ffffff0e] border transition-all ${
+                    formData.departamento !== ""
+                      ? "border-[#ffffff]"
+                      : "border-[#ffffff27]"
+                  } outline-none text-sm rounded-md p-2 placeholder:text-[#ffffffa6] text-white appearance-none w-full`}
                 >
                   <option className="text-[#38457a]" value="">
                     Departamento
@@ -318,12 +381,17 @@ const Form: React.FC = () => {
               setCalculado(true);
             }}
             disabled={
-              formData.valorContaEnergia === "" || formData.potencia === "" || formData.fatorFinanceiroMes === ""
+              formData.valorContaEnergia === "" ||
+              formData.potencia === "" ||
+              formData.fatorFinanceiroMes === ""
             }
-            className={`bg-white text-[#38457a] px-4 py-2 transition-all hover:opacity-60 rounded-md font-semibold ${formData.valorContaEnergia === "" || formData.potencia === "" || formData.fatorFinanceiroMes === ""
-              ? "cursor-not-allowed opacity-60"
-              : "cursor-pointer opacity-100"
-              }`}
+            className={`bg-white text-[#38457a] px-4 py-2 transition-all hover:opacity-60 rounded-md font-semibold ${
+              formData.valorContaEnergia === "" ||
+              formData.potencia === "" ||
+              formData.fatorFinanceiroMes === ""
+                ? "cursor-not-allowed opacity-60"
+                : "cursor-pointer opacity-100"
+            }`}
           >
             Calcular
           </button>
@@ -332,10 +400,11 @@ const Form: React.FC = () => {
               placeholder="Valor total do contrato"
               value={formData.valorTotal}
               onChange={(e) => handleChange({ e, setFormData })}
-              className={`bg-[#ffffff0e] border transition-all ${formData.valorTotal != ""
-                ? "border-[#ffffff]"
-                : "border-[#ffffff27]"
-                } outline-none text-sm rounded-md p-2 w-full placeholder:text-[#ffffffa6] text-white`}
+              className={`bg-[#ffffff0e] border transition-all ${
+                formData.valorTotal != ""
+                  ? "border-[#ffffff]"
+                  : "border-[#ffffff27]"
+              } outline-none text-sm rounded-md p-2 w-full placeholder:text-[#ffffffa6] text-white`}
             />
             <Tooltip
               label="Valor total do contrato da proposta em R$"
@@ -348,14 +417,15 @@ const Form: React.FC = () => {
           </span>
         </div>
         <button
-          disabled={!calculado}
-          className={`text-[#38457a] bg-white px-4 py-2 w-full transition-all hover:opacity-60 rounded-md font-semibold ${!calculado
-            ? "cursor-not-allowed opacity-60"
-            : "cursor-pointer opacity-100"
-            }`}
+          disabled={desativado || isLoading}
+          className={`text-[#38457a] bg-white px-4 py-2 w-full transition-all hover:opacity-60 rounded-md font-semibold grid place-items-center ${
+            desativado
+              ? "cursor-not-allowed opacity-60"
+              : "cursor-pointer opacity-100"
+          }`}
           type="submit"
         >
-          Gerar
+          {isLoading ? <ActivityIndicator /> : "Gerar"}
         </button>
       </form>
     </main>

@@ -18,5 +18,6 @@ export interface Proposta {
   departamentoVendedor: string;
   emailVendedor: string;
   telefone1Vendedor: string;
-  telefone2Vendedor: string
+  telefone2Vendedor: string;
+  elo: string
 }

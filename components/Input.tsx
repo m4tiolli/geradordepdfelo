@@ -1,5 +1,7 @@
 import { Tooltip } from "@chakra-ui/react";
 import { IoMdHelpCircleOutline } from "react-icons/io";
+import { useMask } from "@react-input/mask";
+import { useRef } from "react";
 
 interface InputProps {
   name: string;
@@ -24,11 +26,18 @@ export default function Input({
   type,
   dica,
 }: Readonly<InputProps>) {
+  const telefoneRef = useMask({
+    mask: "(__) _____-____",
+    showMask: true,
+    replacement: {_: /\d/},
+  });
+  const semRef = useRef(null);
   return (
     <>
       {dica ? (
         <span className="relative flex items-center gap-2">
           <input
+            ref={name.includes("telefone") ? telefoneRef : semRef}
             className={`bg-[#ffffff0e] border min-w-fit w-full transition-all ${
               value !== "" ? "border-[#ffffff]" : "border-[#ffffff27]"
             } outline-none text-sm rounded-md p-2 placeholder:text-[#ffffffa6] text-white ${
@@ -50,6 +59,7 @@ export default function Input({
         </span>
       ) : (
         <input
+          ref={name.includes("telefone") ? telefoneRef : semRef}
           className={`bg-[#ffffff0e] border min-w-fit w-full transition-all ${
             value !== "" ? "border-[#ffffff]" : "border-[#ffffff27]"
           } outline-none text-sm rounded-md p-2 placeholder:text-[#ffffffa6] text-white ${

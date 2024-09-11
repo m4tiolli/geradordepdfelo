@@ -42,6 +42,7 @@ export interface SetMesesFatorFinanceiro {
 
 export interface SetFormData {
   setFormData: React.Dispatch<React.SetStateAction<FormData>>
+  elo?: string
 }
 
 export interface SetDepartamentos {
@@ -64,4 +65,5 @@ export interface HandleSubmit {
   formData: FormData
   fatorFinanceiroId: number
   elo: string
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
 }
