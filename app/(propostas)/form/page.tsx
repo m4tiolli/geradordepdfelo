@@ -273,7 +273,59 @@ const Form: React.FC = () => {
                 Dados do vendedor
               </p>
               {campos
-                .slice(10, 15)
+                .slice(10, 11)
+                .map(
+                  (
+                    { name, value, onChange, placeholder, onBlur, dica },
+                    index
+                  ) => (
+                    <Input
+                      key={index++}
+                      name={name}
+                      value={value}
+                      onChange={onChange}
+                      placeholder={placeholder}
+                      onBlur={onBlur}
+                      dica={dica}
+                    />
+                  )
+                )}
+                <span className="relative flex items-center gap-2">
+                <select
+                  id="departamentoVendedor"
+                  name="departamentoVendedor"
+                  value={formData.departamentoVendedor}
+                  onChange={(e) => handleChange({ e, setFormData })}
+                  className={`bg-[#ffffff0e] border transition-all ${
+                    formData.departamentoVendedor !== ""
+                      ? "border-[#ffffff]"
+                      : "border-[#ffffff27]"
+                  } outline-none text-sm rounded-md p-2 placeholder:text-[#ffffffa6] text-white appearance-none w-full`}
+                >
+                  <option className="text-[#38457a]" value="">
+                    Departamento
+                  </option>
+                  {departamentos?.map((departamento, index) => (
+                    <option
+                      className="text-[#38457a]"
+                      key={index++}
+                      value={departamento.nome}
+                    >
+                      {departamento.nome}
+                    </option>
+                  ))}
+                </select>
+                <Tooltip
+                  label="Departamento do vendedor da proposta"
+                  fontSize="md"
+                >
+                  <span>
+                    <IoMdHelpCircleOutline className="text-white text-2xl" />
+                  </span>
+                </Tooltip>
+              </span>
+              {campos
+                .slice(12, 15)
                 .map(
                   (
                     { name, value, onChange, placeholder, onBlur, dica },
