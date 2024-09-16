@@ -1,10 +1,9 @@
 "use client";
 import ActivityIndicator from "@/components/ActivityIndicator";
 import Input from "@/components/Input";
-import { ShowToast } from "@/utils/Toast";
-import axios from "axios";
+import { handleLogin, inputs } from "@/utils/LoginUtils";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 
 function Login() {
   const router = useRouter();
@@ -18,98 +17,28 @@ function Login() {
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    if (formData.email === "" || formData.senha === "") {
-      setInvalid({
-        email: formData.email === "",
-        senha: formData.senha === "",
-      });
-      ShowToast({
-        text: "Preencha todos os campos",
-        type: "error",
-        options: {
-          position: "top-center",
-        },
-      });
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 3000);
-      return;
-    }
-
-    try {
-      const response = await axios.post("/api/login", formData);
-      setIsLoading(false);
-      const { token, auth } = response.data;
-      if (auth) {
-        localStorage.setItem("token", token);
-        router.push("/");
-      } else {
-        console.error("Autenticação falhou.");
-      }
-    } catch (error: any) {
-      console.error("Erro ao realizar login:", error);
-      const emailInvalid = error.response?.status === 404;
-      const passwordInvalid = error.response?.status === 401;
-      if (emailInvalid || passwordInvalid) {
-        setInvalid({ email: emailInvalid, senha: passwordInvalid });
-        ShowToast({
-          text: "Email ou senha inválidos",
-          type: "error",
-          options: {
-            position: "top-center",
-          },
-        });
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 3000);
-      }
-    }
-  };
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-
     setFormData((prevState) => ({ ...prevState, [name]: value }));
     setInvalid((prevState) => ({ ...prevState, [name]: false }));
   };
 
-  const inputs = [
-    {
-      name: "email",
-      value: formData.email,
-      onChange: handleChange,
-      placeholder: "Email",
-      invalid: invalid.email,
-    },
-    {
-      name: "senha",
-      value: formData.senha,
-      onChange: handleChange,
-      placeholder: "Senha",
-      invalid: invalid.senha,
-      type: "password"
-    },
-  ];
-
   return (
     <main className="h-dvh w-full flex flex-col items-center justify-center z-10">
       <form
-        onSubmit={handleSubmit}
+        onSubmit={(e) =>
+          handleLogin({ e, setIsLoading, formData, setInvalid, router })
+        }
         className="flex flex-col z-10 items-center justify-center bg-[#38457a] px-4 py-4 rounded-md min-w-[20vw] h-fit gap-8"
       >
         <h1 className="text-white font-semibold text-3xl">Login</h1>
-        {inputs.map(
-          ({ name, value, onChange, placeholder, invalid, type }, index) => (
+        {inputs({ formData, invalid, setFormData, setInvalid }).map(
+          ({ name, value, placeholder, invalid, type }, index) => (
             <span key={index++} className="relative w-full">
               <Input
                 name={name}
                 value={value}
-                onChange={onChange}
+                onChange={handleChange}
                 placeholder={placeholder}
                 invalid={invalid}
                 type={type}

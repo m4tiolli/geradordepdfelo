@@ -16,7 +16,7 @@ import {
   fetchUsuario,
 } from "@/utils/Fetchs";
 import { handleSubmit, handleChange } from "@/utils/Handles";
-import { inputs } from "@/utils/Objetos";
+import { inputs } from "@/mocks/Objetos";
 import { Tooltip } from "@chakra-ui/react";
 import { IoMdHelpCircleOutline } from "react-icons/io";
 import ActivityIndicator from "@/components/ActivityIndicator";
@@ -24,7 +24,7 @@ import ActivityIndicator from "@/components/ActivityIndicator";
 const Form: React.FC = () => {
   const router = useRouter();
   useEffect(() => {
-    isTokenValid() ? router.push("/form") : router.push("/login");
+    !isTokenValid() ? router.push("/login") : "";
   });
   const [formData, setFormData] = useState<FormData>({
     tomador: "",

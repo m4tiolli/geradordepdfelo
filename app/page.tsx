@@ -2,30 +2,18 @@
 "use client";
 import ActivityIndicator from "@/components/ActivityIndicator";
 import { Usuario } from "@/interfaces/Usuario";
-import { isTokenValid } from "@/utils/Auth";
-import { fetchPrevilegios } from "@/utils/Fetchs";
-import { useRouter } from "next/navigation";
+import { adminButtons, buttons } from "@/mocks/ButtonsHome";
+import { VerificarPrivilegios } from "@/utils/Verificacoes";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const router = useRouter();
   const [usuario, setUsuario] = useState<Usuario>();
+  const router = useRouter()
 
   useEffect(() => {
-    const Verificar = async () => {
-      if (!isTokenValid()) {
-        router.push("/login");
-      } else {
-        await fetchPrevilegios({ setUsuario });
-      }
-    };
-    Verificar();
+    VerificarPrivilegios({setUsuario, router})
   }, []);
-
-  const Sair = () => {
-    localStorage.removeItem("token");
-    router.push("/login");
-  };
 
   if (!usuario) {
     return <ActivityIndicator />;
@@ -38,52 +26,26 @@ export default function Home() {
       </p>
       <h1 className="text-3xl font-semibold text-[#38457a]">Menu</h1>
 
-      <button
-        className="bg-[#38457a] text-white px-4 py-2 w-full transition-all hover:opacity-60 rounded-md font-semibold"
-        onClick={() => router.push("/form")}
-      >
-        Gerar proposta
-      </button>
-      <button
-        className="bg-[#38457a] text-white px-4 py-2 w-full transition-all hover:opacity-60 rounded-md font-semibold"
-        onClick={() => router.push("/visualizar-propostas")}
-      >
-        Visualizar propostas
-      </button>
-      {usuario.administrador === 1 && (
-        <>
+      {buttons(router).map((button, index) => (
         <button
+          key={index}
           className="bg-[#38457a] text-white px-4 py-2 w-full transition-all hover:opacity-60 rounded-md font-semibold"
-          onClick={() => router.push("/cadastrar-usuario")}
+          onClick={button.action}
         >
-          Cadastrar usuário
+          {button.label}
         </button>
-        <button
-          className="bg-[#38457a] text-white px-4 py-2 w-full transition-all hover:opacity-60 rounded-md font-semibold"
-          onClick={() => router.push("/visualizar-usuario")}
-        >
-          Visualizar usuários
-        </button>
-        </>
-      )}
-      <button
-        className="bg-[#38457a] text-white px-4 py-2 w-full transition-all hover:opacity-60 rounded-md font-semibold"
-        onClick={() => router.push("/perfil")}
-      >
-        Atualizar dados do perfil
-      </button>
-      <button
-        onClick={() => router.push("/alterar-senha")}
-        className="bg-[#38457a] text-white px-4 py-2 w-full transition-all hover:opacity-60 rounded-md font-semibold"
-      >
-        Alterar senha
-      </button>
-      <button
-        onClick={Sair}
-        className="bg-[#38457a] text-white px-4 py-2 w-full transition-all hover:opacity-60 rounded-md font-semibold"
-      >
-        Sair
-      </button>
+      ))}
+
+      {usuario.administrador === 1 &&
+        adminButtons(router).map((button, index) => (
+          <button
+            key={index}
+            className="bg-[#38457a] text-white px-4 py-2 w-full transition-all hover:opacity-60 rounded-md font-semibold"
+            onClick={button.action}
+          >
+            {button.label}
+          </button>
+        ))}
     </div>
   );
 }

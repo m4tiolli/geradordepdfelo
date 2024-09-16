@@ -1,5 +1,5 @@
 import { Inputs } from "@/interfaces/Formulario";
-import { consultarCNPJ } from "./Fetchs";
+import { consultarCNPJ } from "../utils/Fetchs";
 
 export const inputs = ({formData, handleChange, setFormData}: Inputs) => [
   {

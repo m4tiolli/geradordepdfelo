@@ -7,7 +7,3 @@ export interface Usuario {
   email: string;
   administrador: boolean | number;
 }
-
-export interface SetUsuario {
-  setUsuario: React.Dispatch<React.SetStateAction<Usuario | undefined>>;
-}

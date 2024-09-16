@@ -5,8 +5,9 @@ import {
   SetDepartamentos,
   Departamentos,
 } from "@/interfaces/Formulario";
-import { SetUsuario } from "@/interfaces/Usuario";
+import { Usuario } from "@/interfaces/Usuario";
 import axios from "axios";
+import { Dispatch, SetStateAction } from "react";
 
 export const fetchMeses = async ({
   setMesesFatorFinanceiro,
@@ -39,7 +40,7 @@ export const fetchUsuario = async ({ setFormData }: SetFormData) => {
   }
 };
 
-export const fetchPrevilegios = async ({ setUsuario }: SetUsuario) => {
+export const fetchPrevilegios = async (setUsuario: Dispatch<SetStateAction<Usuario | undefined>>) => {
   try {
     const response = await axios.get("/api/perfil", {
       headers: { authorization: localStorage.getItem("token") },
