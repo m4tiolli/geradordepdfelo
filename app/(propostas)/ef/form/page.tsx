@@ -58,7 +58,6 @@ const Form = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [letra, setLetra] = useState('S');
-  const [calculado, setCalculado] = useState(false);
   const [propostas, setPropostas] = useState({
     propostaRecuperadora: '',
     propostaServicos: '',
@@ -103,8 +102,8 @@ const Form = () => {
   }, [departamentos.length, propostas]);
 
   const desativado = useMemo(
-    () => desativadoPrev(formData, calculado),
-    [formData, calculado],
+    () => desativadoPrev(formData),
+    [formData],
   );
 
   const camposProposta = inputsDadosProposta({
@@ -239,7 +238,11 @@ const Form = () => {
                 Dados do contrato
               </p>
               {camposValores.map((inputProps, index) => (
-                <Input key={index} {...inputProps} />
+                <Input
+                  key={index}
+                  {...inputProps}
+                  onBlur={() => calcularValorTotal({formData, setFormData, mesesFatorFinanceiro})}
+                />
               ))}
             </div>
           </div>
@@ -271,7 +274,7 @@ const Form = () => {
                     <option
                       className="text-[#38457a]"
                       key={index}
-                      value={departamento.id}
+                      value={departamento.nome}
                     >
                       {departamento.nome}
                     </option>
@@ -311,7 +314,7 @@ const Form = () => {
                     <option
                       className="text-[#38457a]"
                       key={index}
-                      value={departamento.id}
+                      value={departamento.nome}
                     >
                       {departamento.nome}
                     </option>
@@ -328,6 +331,28 @@ const Form = () => {
         </div>
 
         <div className="w-full grid grid-cols-2 gap-4">
+          <span className="relative flex items-center gap-2">
+            <input
+              className={`bg-[#ffffff0e] border min-w-fit w-full transition-all ${
+                formData.valor !== ''
+                  ? 'border-[#ffffff]'
+                  : 'border-[#ffffff27]'
+              } outline-none text-sm rounded-md p-2 placeholder:text-[#ffffffa6] text-white`}
+              name={'valor'}
+              value={formData.valor}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, valor: e.target.value }))
+              }
+              placeholder={'Valor total'}
+              type={'text'}
+              disabled={true}
+            />
+            <Tooltip label={'Valor total da proposta'} fontSize="md">
+              <span>
+                <IoMdHelpCircleOutline className="text-white text-2xl" />
+              </span>
+            </Tooltip>
+          </span>
           <button
             type="submit"
             disabled={desativado}

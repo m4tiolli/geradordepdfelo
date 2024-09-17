@@ -46,7 +46,7 @@ function VisualizarPropostas() {
   // Carregar as propostas e calcular o maior valor
   useEffect(() => {
     axios
-      .get("/api/buscar-proposta")
+      .get("/api/ef/buscar-proposta")
       .then((response) => {
         setPropostas(response.data);
         const maxValue = Math.max(...response.data.map((p: Prop) => parseInt(p.valor)));

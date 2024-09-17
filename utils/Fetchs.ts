@@ -14,7 +14,7 @@ export const fetchMeses = async ({
 }: SetMesesFatorFinanceiro) => {
   try {
     const response = await axios.get(
-      "/api/fatores-financeiros"
+      "/api/ef/fatores-financeiros"
     );
     setMesesFatorFinanceiro(response.data);
   } catch (error) {
@@ -53,7 +53,7 @@ export const fetchPrevilegios = async (setUsuario: Dispatch<SetStateAction<Usuar
 
 export const fetchUltimaProposta = async ({ setPropostas }: any) => {
   try {
-    const response = await axios.get("/api/proxima-proposta");
+    const response = await axios.get("/api/ef/proxima-proposta");
     setPropostas(response.data.proposta)
   } catch (error) {
     console.error("Erro ao buscar proposta:", error);

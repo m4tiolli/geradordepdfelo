@@ -1,5 +1,6 @@
 import { HandleChange, HandleSubmit } from "@/interfaces/Formulario";
 import axios from "axios";
+import { ShowToast } from "./Toast";
 
 export const handleChange = ({ e, setFormData }: HandleChange) => {
   const { name, value } = e.target;
@@ -44,7 +45,7 @@ export const handleSubmit = async ({
     razao: formData.razao,
     cnpj: formData.cnpj,
     potencia: formData.potencia,
-    valor: formData.valorTotal,
+    valor: formData.valor,
     meses: formData.fatorFinanceiroMes,
     valorContaEnergia: formData.valorContaEnergia,
     fatorFinanceiroId: fatorFinanceiroId,
@@ -52,18 +53,41 @@ export const handleSubmit = async ({
   };
   try {
     console.log(dados);
-    const response = await axios.post("/api/gerar-pdf", dados, {
+    const response = await axios.post("/api/ef/gerar-pdf", dados, {
       headers: { authorization: localStorage.getItem("token") },
     });
     const { downloadLink } = response.data;
     if (downloadLink) {
+      ShowToast({
+        type: "success",
+        text: "Proposta gerada com sucesso!",
+        options: {
+          position: "top-center"
+        }
+      })
       setIsLoading(false)
       window.location.href = downloadLink;
     } else {
       console.error("Link de download não encontrado na resposta.");
+      ShowToast({
+        type: "error",
+        text: "Erro ao gerar a proposta.",
+        options: {
+          position: "top-center"
+        }
+      })
+      setIsLoading(false)
     }
   } catch (error) {
     console.error("Erro ao enviar os dados:", error);
+    ShowToast({
+      type: "error",
+      text: "Erro ao gerar a proposta.",
+      options: {
+        position: "top-center"
+      }
+    })
+    setIsLoading(false)
   }
 };
 

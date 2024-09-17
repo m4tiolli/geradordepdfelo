@@ -89,11 +89,11 @@ export async function POST(req: NextRequest) {
     pdfDoc.registerFontkit(fontkit);
 
     const fontLightBytes = fs.readFileSync(
-      path.resolve("app/api/gerar-pdf/SignikaNegative-Light.ttf")
+      path.resolve("app/api/ef/gerar-pdf/SignikaNegative-Light.ttf")
     );
     const fontLight = await pdfDoc.embedFont(fontLightBytes);
     const fontBoldBytes = fs.readFileSync(
-      path.resolve("app/api/gerar-pdf/SignikaNegative-Regular.ttf")
+      path.resolve("app/api/ef/gerar-pdf/SignikaNegative-Regular.ttf")
     );
     const fontBold = await pdfDoc.embedFont(fontBoldBytes);
 

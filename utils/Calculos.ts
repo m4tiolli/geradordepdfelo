@@ -25,17 +25,17 @@ export const calcularValorTotal = ({
   if (potencia * (fator as number) < (contaEnergia / 100) * 5) {
     setFormData((prev) => ({
       ...prev,
-      valorTotal: (contaEnergia / 100) * 5,
+      valor: (contaEnergia / 100) * 5,
     }));
   } else if (potencia * (fator as number) > (contaEnergia / 100) * 10) {
     setFormData((prev) => ({
       ...prev,
-      valorTotal: (contaEnergia / 100) * 10,
+      valor: (contaEnergia / 100) * 10,
     }));
   } else {
     setFormData((prev) => ({
       ...prev,
-      valorTotal: potencia * (fator as number),
+      valor: potencia * (fator as number),
     }));
   }
 };
