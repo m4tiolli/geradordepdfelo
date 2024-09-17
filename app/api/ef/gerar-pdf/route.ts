@@ -144,7 +144,7 @@ export async function POST(req: NextRequest) {
 
       const ano = new Date().getFullYear();
       const query =
-        "INSERT INTO propostas (ano, id_usuario, proposta, nomeEmpresa, razaoEmpresa, cnpjEmpresa, tomador, departamento, email, telefone, potencia, valor, fatorFinanceiro_id, meses, link_pdf, data, contaEnergia, elo, numeroProposta) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        "INSERT INTO propostasEF (ano, id_usuario, proposta, nomeEmpresa, razaoEmpresa, cnpjEmpresa, tomador, departamento, email, telefone, potencia, valor, fatorFinanceiro_id, meses, link_pdf, data, contaEnergia, elo, numeroProposta) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
       await promiseConnection.query<RowDataPacket[]>(query, [
         ano,
         decoded.id,

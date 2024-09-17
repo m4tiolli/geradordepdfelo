@@ -13,12 +13,12 @@ export async function GET(req: NextRequest) {
     const anoAtual = new Date().getFullYear();
 
     const [rowsServicos] = await promiseConnection.query<PropostaRow[]>(
-      'SELECT MAX(numeroProposta) AS maxIdServicos FROM propostas WHERE ano = ? AND elo = \'S\'',
+      'SELECT MAX(numeroProposta) AS maxIdServicos FROM propostasEF WHERE ano = ? AND elo = \'S\'',
       [anoAtual]
     );
 
     const [rowsRecuperadora] = await promiseConnection.query<PropostaRow[]>(
-      'SELECT MAX(numeroProposta) AS maxIdRecuperadora FROM propostas WHERE ano = ? AND elo = \'R\'',
+      'SELECT MAX(numeroProposta) AS maxIdRecuperadora FROM propostasEF WHERE ano = ? AND elo = \'R\'',
       [anoAtual]
     );
 

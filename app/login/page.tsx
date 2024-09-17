@@ -1,15 +1,15 @@
-"use client";
-import ActivityIndicator from "@/components/ActivityIndicator";
-import Input from "@/components/Input";
-import { handleLogin, inputs } from "@/utils/LoginUtils";
-import { useRouter } from "next/navigation";
-import { ChangeEvent, useState } from "react";
+'use client';
+import ActivityIndicator from '@/components/ActivityIndicator';
+import Input from '@/components/Input';
+import { handleLogin, inputs } from '@/utils/LoginUtils';
+import { useRouter } from 'next/navigation';
+import { ChangeEvent, useState } from 'react';
 
 function Login() {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    email: "",
-    senha: "",
+    email: '',
+    senha: '',
   });
   const [invalid, setInvalid] = useState({
     email: false,
@@ -29,7 +29,7 @@ function Login() {
         onSubmit={(e) =>
           handleLogin({ e, setIsLoading, formData, setInvalid, router })
         }
-        className="flex flex-col z-10 items-center justify-center bg-[#38457a] px-4 py-4 rounded-md min-w-[20vw] h-fit gap-8"
+        className="flex flex-col z-10 items-center justify-center bg-azul px-4 py-4 rounded-md min-w-[20vw] h-fit gap-8"
       >
         <h1 className="text-white font-semibold text-3xl">Login</h1>
         {inputs({ formData, invalid, setFormData, setInvalid }).map(
@@ -45,22 +45,22 @@ function Login() {
               />
               <p
                 className={`transition-all absolute -top-5 text-red-600 text-md font-semibold ${
-                  invalid ? "opacity-100" : "opacity-0"
+                  invalid ? 'opacity-100' : 'opacity-0'
                 }`}
               >
-                {placeholder} invalid{placeholder === "Senha" ? "a" : "o"}
+                {placeholder} invalid{placeholder === 'Senha' ? 'a' : 'o'}
               </p>
             </span>
-          )
+          ),
         )}
         <button
-          className={`text-[#38457a] bg-white px-4 py-2 w-full flex items-center justify-center transition-all hover:opacity-60 rounded-md font-semibold ${
-            isLoading ? "opacity-60 cursor-not-allowed" : "cursor-pointer"
+          className={`text-azul bg-white px-4 py-2 w-full flex items-center justify-center transition-all hover:opacity-60 rounded-md font-semibold ${
+            isLoading ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'
           }`}
           type="submit"
           disabled={isLoading}
         >
-          {isLoading ? <ActivityIndicator /> : "Entrar"}
+          {isLoading ? <ActivityIndicator /> : 'Entrar'}
         </button>
       </form>
     </main>

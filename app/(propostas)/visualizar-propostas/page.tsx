@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import {
   Accordion,
   AccordionButton,
@@ -21,14 +21,14 @@ import {
   RangeSliderTrack,
   Select,
   useDisclosure,
-} from "@chakra-ui/react";
-import axios from "axios";
-import { useState, useEffect } from "react";
-import { FaSearch } from "react-icons/fa";
-import { IoFilter } from "react-icons/io5";
-import { Proposta as Prop } from "@/interfaces/Proposta";
-import Proposta from "@/components/Proposta";
-import ActivityIndicator from "@/components/ActivityIndicator";
+} from '@chakra-ui/react';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
+import { FaSearch } from 'react-icons/fa';
+import { IoFilter } from 'react-icons/io5';
+import { Proposta as Prop } from '@/interfaces/Proposta';
+import Proposta from '@/components/Proposta';
+import ActivityIndicator from '@/components/ActivityIndicator';
 
 function VisualizarPropostas() {
   const [propostas, setPropostas] = useState<Prop[]>([]);
@@ -36,20 +36,22 @@ function VisualizarPropostas() {
   const [maiorValor, setMaiorValor] = useState(50000); // Valor inicial padrão
   const [filtros, setFiltros] = useState({
     valor: [100, 50000],
-    nomeEmpresa: "",
-    ano: "",
-    elo: "",
-    codigoProposta: "", // Filtro pelo código da proposta
+    nomeEmpresa: '',
+    ano: '',
+    elo: '',
+    codigoProposta: '', // Filtro pelo código da proposta
   });
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   // Carregar as propostas e calcular o maior valor
   useEffect(() => {
     axios
-      .get("/api/ef/buscar-proposta")
+      .get('/api/ef/buscar-proposta')
       .then((response) => {
         setPropostas(response.data);
-        const maxValue = Math.max(...response.data.map((p: Prop) => parseInt(p.valor)));
+        const maxValue = Math.max(
+          ...response.data.map((p: Prop) => parseInt(p.valor)),
+        );
         setMaiorValor(maxValue);
         setFiltros((prev) => ({
           ...prev,
@@ -70,25 +72,23 @@ function VisualizarPropostas() {
     .filter(
       (proposta) =>
         parseInt(proposta.valor) >= filtros.valor[0] &&
-        parseInt(proposta.valor) <= filtros.valor[1]
+        parseInt(proposta.valor) <= filtros.valor[1],
     )
     .filter((proposta) =>
       proposta.nomeEmpresa
         .toLowerCase()
-        .includes(filtros.nomeEmpresa.toLowerCase())
+        .includes(filtros.nomeEmpresa.toLowerCase()),
     )
     .filter((proposta) =>
-      filtros.ano ? proposta.ano === parseInt(filtros.ano) : true
+      filtros.ano ? proposta.ano === parseInt(filtros.ano) : true,
     )
     .filter((proposta) => (filtros.elo ? proposta.elo === filtros.elo : true))
     .filter((proposta) => proposta.proposta.includes(filtros.codigoProposta)); // Filtro por código da proposta
 
   return (
     <div className="flex flex-col w-3/5 gap-4 items-center justify-center relative z-20">
-      <h1 className="font-semibold text-[#38457a] text-2xl">
-        Visualizar Propostas
-      </h1>
-      <div className="flex items-center justify-between w-full bg-[#38457a] p-2 rounded-md">
+      <h1 className="font-semibold text-azul text-2xl">Visualizar Propostas</h1>
+      <div className="flex items-center justify-between w-full bg-azul p-2 rounded-md">
         <input
           placeholder="Pesquisar por proposta"
           className="bg-transparent text-white placeholder:text-[#ffffffa6] outline-none"
@@ -138,7 +138,7 @@ function VisualizarPropostas() {
                   >
                     <RangeSliderMark value={100}>R$ 100</RangeSliderMark>
                     <RangeSliderMark value={maiorValor - 1000}>
-                      R$ {maiorValor.toLocaleString("pt-BR")}
+                      R$ {maiorValor.toLocaleString('pt-BR')}
                     </RangeSliderMark>
                     <RangeSliderTrack>
                       <RangeSliderFilledTrack />
@@ -227,14 +227,14 @@ function VisualizarPropostas() {
           </ModalFooter>
         </ModalContent>
       </Modal>
-      <p className="text-xl font-medium -my-2 text-[#38457a]">
+      <p className="text-xl font-medium -my-2 text-azul">
         {!isLoading
           ? propostasFiltradas
             ? propostasFiltradas.length > 1
-              ? propostasFiltradas.length + " propostas"
-              : propostasFiltradas.length + " proposta"
-            : "Sem propostas cadastradas"
-          : ""}
+              ? propostasFiltradas.length + ' propostas'
+              : propostasFiltradas.length + ' proposta'
+            : 'Sem propostas cadastradas'
+          : ''}
       </p>
       <div className="flex flex-col items-center justify-start gap-4 scroll-m-[30dvh] h-[70dvh] overflow-y-scroll relative scroller ml-[30px]">
         {isLoading ? (

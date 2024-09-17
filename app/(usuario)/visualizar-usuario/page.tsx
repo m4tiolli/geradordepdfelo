@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import {
   Modal,
   ModalOverlay,
@@ -16,37 +16,36 @@ import {
   Box,
   Select,
   useDisclosure,
-} from "@chakra-ui/react";
-import axios from "axios";
-import { useState, useEffect } from "react";
-import { FaSearch } from "react-icons/fa";
-import { IoFilter } from "react-icons/io5";
-import ActivityIndicator from "@/components/ActivityIndicator";
-import { Usuario as Prop } from "@/interfaces/Usuario";
-import Usuario from "@/components/Usuario";
+} from '@chakra-ui/react';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
+import { FaSearch } from 'react-icons/fa';
+import { IoFilter } from 'react-icons/io5';
+import ActivityIndicator from '@/components/ActivityIndicator';
+import { Usuario as Prop } from '@/interfaces/Usuario';
+import Usuario from '@/components/Usuario';
 
 function VisualizarUsuarios() {
   const [usuarios, setUsuarios] = useState<Prop[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filtros, setFiltros] = useState({
-    nome: "",
-    administrador: "", // Agora é uma string para compatibilidade com o Select
-    departamento: "",
+    nome: '',
+    administrador: '', // Agora é uma string para compatibilidade com o Select
+    departamento: '',
   });
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   console.log(usuarios);
-  
 
   useEffect(() => {
     axios
-      .get("/api/buscar-usuarios")
+      .get('/api/buscar-usuarios')
       .then((response) => setUsuarios(response.data))
       .finally(() => setIsLoading(false));
   }, []);
 
   const handleFiltroChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     setFiltros({
       ...filtros,
@@ -56,25 +55,23 @@ function VisualizarUsuarios() {
 
   const usuariosFiltrados = usuarios
     .filter((usuario) =>
-      usuario.nome.toLowerCase().includes(filtros.nome.toLowerCase())
+      usuario.nome.toLowerCase().includes(filtros.nome.toLowerCase()),
     )
     .filter((usuario) =>
       filtros.administrador
         ? usuario.administrador == Number(filtros.administrador)
-        : true
+        : true,
     )
     .filter((usuario) =>
       filtros.departamento
         ? usuario.departamento === filtros.departamento
-        : true
+        : true,
     );
 
   return (
     <div className="flex flex-col w-3/5 h-dvh gap-4 items-center justify-center relative z-20">
-      <h1 className="font-semibold text-[#38457a] text-2xl">
-        Visualizar Usuários
-      </h1>
-      <div className="flex items-center justify-between w-full bg-[#38457a] p-2 rounded-md">
+      <h1 className="font-semibold text-azul text-2xl">Visualizar Usuários</h1>
+      <div className="flex items-center justify-between w-full bg-azul p-2 rounded-md">
         <input
           placeholder="Pesquisar por nome"
           className="bg-transparent text-white placeholder:text-[#ffffffa6] outline-none"

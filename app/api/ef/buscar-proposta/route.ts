@@ -24,7 +24,7 @@ export async function GET(req: Request) {
  u.email AS emailVendedor,
  u.telefone1 AS telefone1Vendedor,
  u.telefone2 AS telefone2Vendedor
- FROM propostas AS p 
+ FROM propostasEF AS p 
  INNER JOIN usuario AS u 
  ON p.id_usuario = u.id`;
 

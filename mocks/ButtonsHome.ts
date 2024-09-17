@@ -4,7 +4,7 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 export const buttons = (router: AppRouterInstance) => [
   {
     label: "Gerar proposta",
-    action: () => router.push("ef/form"),
+    action: () => router.push("/selecionar-proposta"),
   },
   {
     label: "Visualizar propostas",

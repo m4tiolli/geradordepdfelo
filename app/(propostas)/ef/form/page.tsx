@@ -101,10 +101,7 @@ const Form = () => {
     );
   }, [departamentos.length, propostas]);
 
-  const desativado = useMemo(
-    () => desativadoPrev(formData),
-    [formData],
-  );
+  const desativado = useMemo(() => desativadoPrev(formData), [formData]);
 
   const camposProposta = inputsDadosProposta({
     formData,
@@ -143,7 +140,7 @@ const Form = () => {
             setIsLoading,
           })
         }
-        className="flex flex-col z-10 items-center justify-center bg-[#38457a] px-4 py-4 rounded-md w-fit h-fit gap-4"
+        className="flex flex-col z-10 items-center justify-center bg-azul px-4 py-4 rounded-md w-fit h-fit gap-4"
       >
         <h1 className="text-3xl text-white font-semibold">
           Gerador de Proposta de Eficiência Energética
@@ -182,7 +179,7 @@ const Form = () => {
         <div className="grid grid-cols-2 items-start justify-center gap-3 w-full h-fit ">
           <div className="flex flex-col gap-6">
             <div className="grid grid-cols-2 items-center justify-center gap-3 w-full h-fit border border-[#ffffff27] rounded-md px-2 py-3 relative">
-              <p className="absolute -top-4 bg-[#38457a] px py text-md text-[#ffffffce] font-semibold left-2">
+              <p className="absolute -top-4 bg-azul px py text-md text-[#ffffffce] font-semibold left-2">
                 Dados da proposta
               </p>
 
@@ -205,15 +202,11 @@ const Form = () => {
                       : 'border-[#ffffff27]'
                   } outline-none text-sm rounded-md p-2 placeholder:text-[#ffffffa6] text-white appearance-none w-full`}
                 >
-                  <option className="text-[#38457a]" value="">
+                  <option className="text-azul" value="">
                     Duração do contrato
                   </option>
                   {mesesFatorFinanceiro?.map((mes, index) => (
-                    <option
-                      className="text-[#38457a]"
-                      key={index}
-                      value={mes.meses}
-                    >
+                    <option className="text-azul" key={index} value={mes.meses}>
                       {mes.meses + ' meses de contrato'}
                     </option>
                   ))}
@@ -234,14 +227,20 @@ const Form = () => {
             </div>
 
             <div className="grid grid-cols-2 items-center justify-center gap-3 w-full h-fit border border-[#ffffff27] rounded-md px-2 py-3 relative">
-              <p className="absolute -top-4 bg-[#38457a] px py text-md text-[#ffffffce] font-semibold left-2">
+              <p className="absolute -top-4 bg-azul px py text-md text-[#ffffffce] font-semibold left-2">
                 Dados do contrato
               </p>
               {camposValores.map((inputProps, index) => (
                 <Input
                   key={index}
                   {...inputProps}
-                  onBlur={() => calcularValorTotal({formData, setFormData, mesesFatorFinanceiro})}
+                  onBlur={() =>
+                    calcularValorTotal({
+                      formData,
+                      setFormData,
+                      mesesFatorFinanceiro,
+                    })
+                  }
                 />
               ))}
             </div>
@@ -249,7 +248,7 @@ const Form = () => {
 
           <div className="gap-6 flex flex-col">
             <div className="grid grid-cols-2 items-center justify-center gap-3 w-full h-fit border border-[#ffffff27] rounded-md px-2 py-3 relative">
-              <p className="absolute -top-4 bg-[#38457a] px py text-md text-[#ffffffce] font-semibold left-2">
+              <p className="absolute -top-4 bg-azul px py text-md text-[#ffffffce] font-semibold left-2">
                 Dados do vendedor
               </p>
               {camposVendedor.map((inputProps, index) => (
@@ -267,12 +266,12 @@ const Form = () => {
                       : 'border-[#ffffff27]'
                   } outline-none text-sm rounded-md p-2 placeholder:text-[#ffffffa6] text-white appearance-none w-full`}
                 >
-                  <option className="text-[#38457a]" value="">
+                  <option className="text-azul" value="">
                     Departamento
                   </option>
                   {departamentos?.map((departamento, index) => (
                     <option
-                      className="text-[#38457a]"
+                      className="text-azul"
                       key={index}
                       value={departamento.nome}
                     >
@@ -289,7 +288,7 @@ const Form = () => {
             </div>
 
             <div className="grid grid-cols-2 items-center justify-center gap-3 w-full h-fit border border-[#ffffff27] rounded-md px-2 py-3 relative">
-              <p className="absolute -top-4 bg-[#38457a] px py text-md text-[#ffffffce] font-semibold left-2">
+              <p className="absolute -top-4 bg-azul px py text-md text-[#ffffffce] font-semibold left-2">
                 Dados do comprador
               </p>
               {camposTomador.map((inputProps, index) => (
@@ -307,12 +306,12 @@ const Form = () => {
                       : 'border-[#ffffff27]'
                   } outline-none text-sm rounded-md p-2 placeholder:text-[#ffffffa6] text-white appearance-none w-full`}
                 >
-                  <option className="text-[#38457a]" value="">
+                  <option className="text-azul" value="">
                     Departamento
                   </option>
                   {departamentos?.map((departamento, index) => (
                     <option
-                      className="text-[#38457a]"
+                      className="text-azul"
                       key={index}
                       value={departamento.nome}
                     >
@@ -356,7 +355,7 @@ const Form = () => {
           <button
             type="submit"
             disabled={desativado}
-            className={`text-[#38457a] bg-white px-4 py-2 w-full transition-all hover:opacity-60 rounded-md font-semibold grid place-items-center ${
+            className={`text-azul bg-white px-4 py-2 w-full transition-all hover:opacity-60 rounded-md font-semibold grid place-items-center ${
               desativado
                 ? 'cursor-not-allowed opacity-60'
                 : 'cursor-pointer opacity-100'
