@@ -1,3 +1,4 @@
+import { SetformData } from '@/utils/Fetchs';
 import React from 'react'
 
 export interface FatoresFinanceiros {
@@ -52,7 +53,7 @@ export interface SetDepartamentos {
 export interface Inputs {
   formData: FormData;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-  setFormData: React.Dispatch<React.SetStateAction<FormData>>;
+  setFormData?: SetformData;
 }
 
 export interface HandleChange {

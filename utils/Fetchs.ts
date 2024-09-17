@@ -70,7 +70,7 @@ export const fetchDepartamentos = async ({ setDepartamentos }: SetDepartamentos)
   }
 };
 
-type SetformData = React.Dispatch<React.SetStateAction<FormData>>;
+export type SetformData = React.Dispatch<React.SetStateAction<FormData>>;
 export const consultarCNPJ = async ({
   setFormData,
   formData,
