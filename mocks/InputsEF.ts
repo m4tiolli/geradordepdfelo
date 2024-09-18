@@ -1,6 +1,5 @@
-import { SetformData } from './../utils/Fetchs';
+import { SetformData, consultarCNPJ } from '../utils/Fetchs';
 import { Inputs } from "@/interfaces/Formulario";
-import { consultarCNPJ } from "../utils/Fetchs";
 
 export const inputsDadosVendedor = ({ formData, handleChange }: Inputs) => [
   {

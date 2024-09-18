@@ -21,7 +21,7 @@ import {
   inputsDadosTomador,
   inputsDadosVendedor,
   inputsValores,
-} from '@/mocks/Objetos';
+} from '@/mocks/InputsEF';
 import { Tooltip } from '@chakra-ui/react';
 import { IoMdHelpCircleOutline } from 'react-icons/io';
 import ActivityIndicator from '@/components/ActivityIndicator';
@@ -206,7 +206,11 @@ const Form = () => {
                     Duração do contrato
                   </option>
                   {mesesFatorFinanceiro?.map((mes, index) => (
-                    <option className="text-azul" key={index} value={mes.meses}>
+                    <option
+                      className="text-azul"
+                      key={index++}
+                      value={mes.meses}
+                    >
                       {mes.meses + ' meses de contrato'}
                     </option>
                   ))}
@@ -222,7 +226,7 @@ const Form = () => {
               </span>
 
               {camposProposta.map((inputProps, index) => (
-                <Input key={index} {...inputProps} />
+                <Input key={index++} {...inputProps} />
               ))}
             </div>
 
@@ -232,7 +236,7 @@ const Form = () => {
               </p>
               {camposValores.map((inputProps, index) => (
                 <Input
-                  key={index}
+                  key={index++}
                   {...inputProps}
                   onBlur={() =>
                     calcularValorTotal({
@@ -252,7 +256,7 @@ const Form = () => {
                 Dados do vendedor
               </p>
               {camposVendedor.map((inputProps, index) => (
-                <Input key={index} {...inputProps} />
+                <Input key={index++} {...inputProps} />
               ))}
               <span className="relative flex items-center gap-2">
                 <select
@@ -272,7 +276,7 @@ const Form = () => {
                   {departamentos?.map((departamento, index) => (
                     <option
                       className="text-azul"
-                      key={index}
+                      key={index++}
                       value={departamento.nome}
                     >
                       {departamento.nome}
@@ -292,7 +296,7 @@ const Form = () => {
                 Dados do comprador
               </p>
               {camposTomador.map((inputProps, index) => (
-                <Input key={index} {...inputProps} />
+                <Input key={index++} {...inputProps} />
               ))}
               <span className="relative flex items-center gap-2">
                 <select
@@ -312,7 +316,7 @@ const Form = () => {
                   {departamentos?.map((departamento, index) => (
                     <option
                       className="text-azul"
-                      key={index}
+                      key={index++}
                       value={departamento.nome}
                     >
                       {departamento.nome}
