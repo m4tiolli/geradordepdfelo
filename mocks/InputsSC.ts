@@ -3,7 +3,7 @@ import { ChangeEvent } from "react";
 
 interface Inputs {
   name: string;
-  value: string;
+  value: string | number | Date;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   placeholder: string;
   dica: string;

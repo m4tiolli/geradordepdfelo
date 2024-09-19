@@ -14,8 +14,8 @@ export interface ValuesSC {
   departamentoVendedor: string;
   assinaturaVendedor: string;
   tipoContato: string;
-  entradaProposta: string;
-  dataProposta: string;
+  entradaProposta: string | number | Date;
+  dataProposta: string | number | Date;
   dataFullProposta: string;
   codigoProposta: string;
   validadeProposta: string;

@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import { ShowToast } from '@/utils/Toast';
 import axios from 'axios';
@@ -107,7 +108,7 @@ function CriarSenha() {
             router.push('/');
           }, 3000);
         });
-    } catch (erro: any) {
+    } catch (erro: unknown) {
       console.error(erro.response.data.error);
       ShowToast({
         type: 'error',

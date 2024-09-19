@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Input from '@/components/Input';
 import { ValuesSC } from '@/interfaces/SC';
 import {
@@ -11,6 +11,26 @@ import {
 } from '@/mocks/InputsSC';
 import { ChangeEvent, useState } from 'react';
 import { Stepper, Step } from '@material-tailwind/react';
+import { CgArrowsExchange } from 'react-icons/cg';
+import {
+  Button,
+  ButtonGroup,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Radio,
+  RadioGroup,
+  Stack,
+  useDisclosure,
+} from '@chakra-ui/react';
+import { ShowToast } from '@/utils/Toast';
+import ActivityIndicator from '@/components/ActivityIndicator';
+import { Departamentos } from '@/interfaces/Formulario';
+import { fetchDepartamentos } from '@/utils/Fetchs';
+import { fetchPropostas, fetchValores } from './fetchs';
 
 function Form() {
   const steps = [
@@ -20,7 +40,15 @@ function Form() {
     'Dados do Tomador',
     'Dados do Vendedor',
   ];
-  const [tipoProposta, setTipoProposta] = useState('vf');
+
+  const [tipoProposta, setTipoProposta] = useState('Valor Final');
+  const [elo, setElo] = useState('Serviços');
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isEloOpen,
+    onOpen: onEloOpen,
+    onClose: onEloClose,
+  } = useDisclosure();
   const [values, setValues] = useState<ValuesSC>({
     cnpjEmpresa: '',
     razaoEmpresa: '',
@@ -37,8 +65,8 @@ function Form() {
     departamentoVendedor: '',
     assinaturaVendedor: '',
     tipoContato: '',
-    entradaProposta: '',
-    dataProposta: '',
+    entradaProposta: new Date().toISOString().slice(0, 10),
+    dataProposta: new Date().toISOString().slice(0, 10),
     dataFullProposta: '',
     codigoProposta: '',
     validadeProposta: '',
@@ -49,16 +77,27 @@ function Form() {
   });
   const [activeStep, setActiveStep] = useState(0);
 
-  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setValues((prev) => ({ ...prev, [name]: value }));
-  };
-
+  const [departamentos, setDepartamentos] = useState<Departamentos[]>([]);
+  const [propostas, setPropostas] = useState({
+    propostasHH: {
+      propostaSH: '',
+      propostaRH: '',
+    },
+    propostasVF: {
+      propostaSF: '',
+      propostaRF: '',
+    },
+  });
   const [isLastStep, setIsLastStep] = React.useState(false);
   const [isFirstStep, setIsFirstStep] = React.useState(false);
 
   const handleNext = () => !isLastStep && setActiveStep((cur) => cur + 1);
   const handlePrev = () => !isFirstStep && setActiveStep((cur) => cur - 1);
+
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setValues((prev) => ({ ...prev, [name]: value }));
+  };
 
   const inputs = [
     inputsDadosProposta({ values, onChange }),
@@ -68,12 +107,72 @@ function Form() {
     inputsDadosVendedor({ values, onChange }),
   ];
 
+  useEffect(() => {
+    Promise.all([
+      fetchDepartamentos({ setDepartamentos }),
+      fetchPropostas(setPropostas),
+      fetchValores(setValues),
+    ]);
+  }, []);
+
+  useEffect(() => {
+    setValues((prev) => ({
+      ...prev,
+      codigoProposta:
+        tipoProposta === 'Homem Hora'
+          ? elo === 'Serviços'
+            ? propostas.propostasHH.propostaSH
+            : propostas.propostasHH.propostaRH
+          : elo === 'Serviços'
+          ? propostas.propostasVF.propostaSF
+          : propostas.propostasVF.propostaRF,
+    }));
+  }, [propostas, tipoProposta, elo]);
+
+  const isDataLoading = useMemo(() => {
+    return (
+      !departamentos.length ||
+      Object.values(propostas.propostasHH).some((val) => val === '') ||
+      Object.values(propostas.propostasVF).some((val) => val === '')
+    );
+  }, [departamentos.length, propostas]);
+
+  if (isDataLoading) {
+    return <ActivityIndicator />;
+  }
+
   return (
     <main className="h-dvh w-full flex flex-col items-center justify-center z-10">
       <div className="w-3/5 flex flex-col items-center gap-8 relative">
         <h1 className="text-3xl text-azul font-semibold">
           Gerador de Proposta de Serviço de Campo
         </h1>
+        <div className="flex items-center gap-4 w-[100dvw] justify-center">
+          <div className="flex items-center justify-center gap-4">
+            <h3>
+              Modelo de proposta atual: <u>{tipoProposta}</u>
+            </h3>
+            <button
+              onClick={onOpen}
+              className="flex items-center px-3 py-2 rounded-md border hover:bg-[#38457a0e] transition-all border-[#00000031] text-xl font-semibold gap-3"
+            >
+              Trocar
+              <CgArrowsExchange />
+            </button>
+          </div>
+          <div className="flex items-center justify-center gap-4">
+            <h3>
+              Cadastro da Elo Selecionado: <u>{elo}</u>
+            </h3>
+            <button
+              onClick={onEloOpen}
+              className="flex items-center px-3 py-2 rounded-md border hover:bg-[#38457a0e] transition-all border-[#00000031] text-xl font-semibold gap-3"
+            >
+              Trocar
+              <CgArrowsExchange />
+            </button>
+          </div>
+        </div>
         <Stepper
           className="w-full"
           activeLineClassName="bg-azul"
@@ -110,7 +209,10 @@ function Form() {
         </Stepper>
         <div className="mt-10 grid grid-cols-2 place-items-stretch justify-stretch items-stretch gap-3 w-full h-[40dvh]">
           {inputs[activeStep].map((input, index) => (
-            <Input {...input} key={index} color="#38457a" />
+            <div key={index}>
+              <Input {...input} color="#38457a" />
+              <p className="text-md font-medium">{input.dica}</p>
+            </div>
           ))}
         </div>
         <div className="flex items-center justify-end gap-4 w-full">
@@ -136,6 +238,88 @@ function Form() {
           </button>
         </div>
       </div>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Selecionar modelo de proposta</ModalHeader>
+          <ModalBody>
+            <RadioGroup onChange={setTipoProposta} value={tipoProposta}>
+              <Stack direction={'row'} gap={'16px'}>
+                <Radio value="Valor Final">Valor Final</Radio>
+                <Radio value="Homem Hora">Homem Hora</Radio>
+              </Stack>
+            </RadioGroup>
+          </ModalBody>
+          <ModalFooter>
+            <ButtonGroup gap={'16px'}>
+              <Button
+                variant={'ghost'}
+                onClick={() => {
+                  setTipoProposta('Valor Final');
+                  onClose();
+                }}
+              >
+                Voltar
+              </Button>
+              <Button
+                colorScheme={'green'}
+                onClick={() => {
+                  ShowToast({
+                    type: 'success',
+                    text: 'Modelo de proposta alterado!',
+                    options: { position: 'top-center' },
+                  });
+                  onClose();
+                }}
+              >
+                Confirmar
+              </Button>
+            </ButtonGroup>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={isEloOpen} onClose={onEloClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Selecionar Cadastro da Elo</ModalHeader>
+          <ModalBody>
+            <RadioGroup onChange={setElo} value={elo}>
+              <Stack direction={'row'} gap={'16px'}>
+                <Radio value="Serviços">Serviços</Radio>
+                <Radio value="Recuperadora">Recuperadora</Radio>
+              </Stack>
+            </RadioGroup>
+          </ModalBody>
+          <ModalFooter>
+            <ButtonGroup gap={'16px'}>
+              <Button
+                variant={'ghost'}
+                onClick={() => {
+                  setElo('Serviços');
+                  onEloClose();
+                }}
+              >
+                Voltar
+              </Button>
+              <Button
+                colorScheme={'green'}
+                onClick={() => {
+                  ShowToast({
+                    type: 'success',
+                    text: 'Cadastro da Elo alterado!',
+                    options: { position: 'top-center' },
+                  });
+                  onEloClose();
+                }}
+              >
+                Confirmar
+              </Button>
+            </ButtonGroup>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </main>
   );
 }

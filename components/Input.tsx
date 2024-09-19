@@ -5,7 +5,7 @@ import React, { useRef } from 'react';
 
 interface InputProps {
   name: string;
-  value: string;
+  value: string | number | Date;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder: string;
   invalid?: boolean;
@@ -38,11 +38,11 @@ export default function Input({
 
 
   // Classe original
-  const inputClassName = `bg-[#ffffff0e] border min-w-fit w-full transition-all ${value ? 'border-[#ffffff]' : 'border-[#ffffff27]'
+  const inputClassName = `appearance-none bg-[#ffffff0e] border min-w-fit w-full transition-all ${value ? 'border-[#ffffff]' : 'border-[#ffffff27]'
     } outline-none text-sm rounded-md p-2 placeholder:text-[#ffffffa6] text-white ${invalid ? 'invalid border-red-600' : ''
     } ${disabled ? 'opacity-70 cursor-not-allowed' : ''}`
 
-  const inputAzul = `bg-[#38457a0e] border min-w-fit w-full transition-all ${value ? 'border-[#38457a]' : 'border-[#38457a27]'
+  const inputAzul = `appearance-none bg-[#38457a0e] border min-w-fit w-full transition-all ${value ? 'border-[#38457a]' : 'border-[#38457a27]'
     } outline-none text-sm rounded-md p-2 placeholder:text-[#38457aa6] text-azul ${invalid ? 'invalid border-red-600' : ''
     } ${disabled ? 'opacity-70 cursor-not-allowed' : ''}`
 
@@ -53,7 +53,7 @@ export default function Input({
       ref={inputRef}
       className={color === "#38457a" ? inputAzul : inputClassName}
       name={name}
-      value={value}
+      value={value as string}
       onChange={onChange}
       placeholder={placeholder}
       type={type ?? 'text'}
