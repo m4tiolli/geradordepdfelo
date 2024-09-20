@@ -109,13 +109,13 @@ function CriarSenha() {
           }, 3000);
         });
     } catch (error) {
-      console.error(error.response.data.error);
+      console.error(error);
       ShowToast({
         type: 'error',
         options: {
           position: 'top-center',
         },
-        text: error.response.data.error as string,
+        text: error,
       });
     } finally {
       setIsLoading(false);
