@@ -15,7 +15,7 @@ export async function PUT(req: NextRequest) {
   try {
     const { campo, valor } = await req.json()
     const [result] = await promiseConnection.query(`UPDATE valoresSC SET ${campo} = ? WHERE id = 1`, [valor])
-    if (result.affectedRows) {
+    if (result) {
       return new Response("Dados Atualizados!", { status: 200 })
     }
   } catch (error) {
