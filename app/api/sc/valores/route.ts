@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { promiseConnection } from "@/utils/Connections";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -15,7 +14,7 @@ export async function GET() {
 export async function PUT(req: NextRequest) {
   try {
     const { campo, valor } = await req.json()
-    const [result]: any = await promiseConnection.query(`UPDATE valoresSC SET ${campo} = ? WHERE id = 1`, [valor])
+    const [result] = await promiseConnection.query(`UPDATE valoresSC SET ${campo} = ? WHERE id = 1`, [valor])
     if (result.affectedRows) {
       return new Response("Dados Atualizados!", { status: 200 })
     }
