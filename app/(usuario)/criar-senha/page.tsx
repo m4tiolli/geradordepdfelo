@@ -115,7 +115,7 @@ function CriarSenha() {
         options: {
           position: 'top-center',
         },
-        text: error,
+        text: error as string,
       });
     } finally {
       setIsLoading(false);
