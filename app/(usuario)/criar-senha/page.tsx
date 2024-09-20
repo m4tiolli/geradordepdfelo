@@ -108,14 +108,14 @@ function CriarSenha() {
             router.push('/');
           }, 3000);
         });
-    } catch (erro: unknown) {
-      console.error(erro.response.data.error);
+    } catch (error) {
+      console.error(error.response.data.error);
       ShowToast({
         type: 'error',
         options: {
           position: 'top-center',
         },
-        text: erro.response.data.error as string,
+        text: error.response.data.error as string,
       });
     } finally {
       setIsLoading(false);
