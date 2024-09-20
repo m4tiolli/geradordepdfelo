@@ -30,9 +30,23 @@ import { ShowToast } from '@/utils/Toast';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import { Departamentos } from '@/interfaces/Formulario';
 import { fetchDepartamentos } from '@/utils/Fetchs';
-import { fetchPropostas, fetchValores } from './fetchs';
+import { fetchPropostas, fetchUsuario, fetchValores } from './fetchs';
+import Select from '@/components/Select';
+import { VerificarPrivilegios } from '@/utils/Verificacoes';
+import { useRouter } from 'next/navigation';
+import { Usuario } from '@/interfaces/Usuario';
 
 function Form() {
+  const router = useRouter();
+  useEffect(() => {
+    VerificarPrivilegios({
+      router,
+      setUsuario: setUsuario as unknown as React.Dispatch<
+        React.SetStateAction<Usuario | undefined>
+      >,
+    });
+  }, []);
+
   const steps = [
     'Dados da Proposta',
     'Dados da Empresa',
@@ -41,6 +55,7 @@ function Form() {
     'Dados do Vendedor',
   ];
 
+  const setUsuario = '';
   const [tipoProposta, setTipoProposta] = useState('Valor Final');
   const [elo, setElo] = useState('Serviços');
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -69,11 +84,12 @@ function Form() {
     dataProposta: new Date().toISOString().slice(0, 10),
     dataFullProposta: '',
     codigoProposta: '',
-    validadeProposta: '',
+    validadeProposta: '05 (cinco) dias contado a partir desta data.',
     valorTecnico: '',
     valorKM: '',
     valorDiaria: '',
-    condicaoPagamento: '',
+    condicaoPagamento:
+      '100% (cem por cento) a 7 DDL a partir da conclusão dos serviços, mediante aprovação de cadastro',
   });
   const [activeStep, setActiveStep] = useState(0);
 
@@ -94,17 +110,17 @@ function Form() {
   const handleNext = () => !isLastStep && setActiveStep((cur) => cur + 1);
   const handlePrev = () => !isFirstStep && setActiveStep((cur) => cur - 1);
 
-  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const onChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setValues((prev) => ({ ...prev, [name]: value }));
   };
 
   const inputs = [
-    inputsDadosProposta({ values, onChange }),
-    inputsDadosEmpresa({ values, onChange }),
-    inputsValoresProposta({ values, onChange }),
-    inputsDadosTomador({ values, onChange }),
-    inputsDadosVendedor({ values, onChange }),
+    inputsDadosProposta({ values, onChange, setValues }),
+    inputsDadosEmpresa({ values, onChange, setValues }),
+    inputsValoresProposta({ values, onChange, setValues }),
+    inputsDadosTomador({ values, onChange, setValues }),
+    inputsDadosVendedor({ values, onChange, setValues }),
   ];
 
   useEffect(() => {
@@ -112,6 +128,7 @@ function Form() {
       fetchDepartamentos({ setDepartamentos }),
       fetchPropostas(setPropostas),
       fetchValores(setValues),
+      fetchUsuario(setValues),
     ]);
   }, []);
 
@@ -211,9 +228,34 @@ function Form() {
           {inputs[activeStep].map((input, index) => (
             <div key={index}>
               <Input {...input} color="#38457a" />
-              <p className="text-md font-medium">{input.dica}</p>
+              <p className="text-md font-medium">{input.placeholder}</p>
             </div>
           ))}
+          {activeStep === 3 && (
+            <div>
+              <Select
+                departamentos={departamentos}
+                onChange={onChange}
+                value={values.departamentoTomador}
+                placeholder={'Departamento do tomador'}
+                color="#38457a"
+              />
+              <p className="text-md font-medium">Departamento do tomador</p>
+            </div>
+          )}
+
+          {activeStep === 4 && (
+            <div>
+              <Select
+                departamentos={departamentos}
+                onChange={onChange}
+                value={values.departamentoVendedor}
+                placeholder={'Departamento do vendedor'}
+                color="#38457a"
+              />
+              <p className="text-md font-medium">Departamento do vendedor</p>
+            </div>
+          )}
         </div>
         <div className="flex items-center justify-end gap-4 w-full">
           <button

@@ -1,4 +1,5 @@
 import { ValuesSC } from '@/interfaces/SC';
+import { getToken } from '@/utils/Auth';
 import axios from 'axios';
 import React from 'react';
 
@@ -38,4 +39,23 @@ export const fetchPropostas = async (
       setPropostas(novasPropostas);
     })
     .catch((err) => console.error(err));
+};
+
+export const fetchUsuario = async (
+  setValues: React.Dispatch<React.SetStateAction<ValuesSC>>,
+) => {
+  const token = await getToken();
+  await axios
+    .get('/api/perfil', { headers: { Authorization: token } })
+    .then((response) =>
+      setValues((prev) => ({
+        ...prev,
+        nomeVendedor: response.data.nome,
+        departamentoVendedor: response.data.departamento,
+        telefone1Vendedor: response.data.telefone1,
+        telefone2Vendedor: response.data.telefone2,
+        emailVendedor: response.data.email,
+      })),
+    )
+    .catch((error) => console.error(error));
 };

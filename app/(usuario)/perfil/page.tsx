@@ -1,5 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
+import React from 'react';
 import Input from '@/components/Input';
 import { Departamentos } from '@/interfaces/Formulario';
 import { Usuario } from '@/interfaces/Usuario';

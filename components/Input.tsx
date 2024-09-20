@@ -35,8 +35,6 @@ export default function Input({
   });
   const semRef = useRef(null);
 
-
-
   // Classe original
   const inputClassName = `appearance-none bg-[#ffffff0e] border min-w-fit w-full transition-all ${value ? 'border-[#ffffff]' : 'border-[#ffffff27]'
     } outline-none text-sm rounded-md p-2 placeholder:text-[#ffffffa6] text-white ${invalid ? 'invalid border-red-600' : ''

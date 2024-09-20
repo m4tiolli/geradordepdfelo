@@ -1,4 +1,6 @@
 import { ValuesSC } from "@/interfaces/SC";
+import axios from "axios";
+import React, { SetStateAction } from "react";
 import { ChangeEvent } from "react";
 
 interface Inputs {
@@ -7,29 +9,31 @@ interface Inputs {
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   placeholder: string;
   dica: string;
-  type?: string
+  type?: string;
+  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
 }
 
 interface IDados {
   values: ValuesSC;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  setValues: React.Dispatch<SetStateAction<ValuesSC>>
 }
 
 // 1. Dados da Empresa
-export const inputsDadosEmpresa = ({ values, onChange }: IDados): Inputs[] => [
-  {
-    name: "razaoEmpresa",
-    value: values.razaoEmpresa,
-    onChange: onChange,
-    placeholder: "Razão da Empresa",
-    dica: "Razão da Empresa"
-  },
+export const inputsDadosEmpresa = ({ values, onChange, setValues }: IDados): Inputs[] => [
   {
     name: "cnpjEmpresa",
     value: values.cnpjEmpresa,
     onChange: onChange,
     placeholder: "CNPJ da Empresa",
-    dica: "CNPJ da Empresa"
+    dica: "CNPJ da Empresa",
+    onBlur: () => fetchDadosEmpresa({ values, setValues })
+  }, {
+    name: "razaoEmpresa",
+    value: values.razaoEmpresa,
+    onChange: onChange,
+    placeholder: "Razão da Empresa",
+    dica: "Razão da Empresa"
   },
   {
     name: "nomeEmpresa",
@@ -71,7 +75,7 @@ export const inputsDadosProposta = ({ values, onChange }: IDados): Inputs[] => [
     value: values.validadeProposta,
     onChange: onChange,
     placeholder: "Validade da Proposta",
-    dica: "Validade da Proposta"
+    dica: "Ex: 05 (Cinco) dias contado a partir desta data."
   }
 ];
 
@@ -103,7 +107,7 @@ export const inputsValoresProposta = ({ values, onChange }: IDados): Inputs[] =>
     value: values.condicaoPagamento,
     onChange: onChange,
     placeholder: "Condição de Pagamento",
-    dica: "Condição de Pagamento"
+    dica: "Ex: 100% (cem por cento) a 7 DDL a partir da conclusão dos serviços, mediante aprovação de cadastro"
   }
 ];
 
@@ -137,13 +141,6 @@ export const inputsDadosTomador = ({ values, onChange }: IDados): Inputs[] => [
     placeholder: "Telefone 2 do Tomador",
     dica: "Telefone 2 do Tomador"
   },
-  {
-    name: "departamentoTomador",
-    value: values.departamentoTomador,
-    onChange: onChange,
-    placeholder: "Departamento do Tomador",
-    dica: "Departamento do Tomador"
-  }
 ];
 
 // 5. Dados do Vendedor
@@ -176,11 +173,21 @@ export const inputsDadosVendedor = ({ values, onChange }: IDados): Inputs[] => [
     placeholder: "Telefone 2 do Vendedor",
     dica: "Telefone 2 do Vendedor"
   },
-  {
-    name: "departamentoVendedor",
-    value: values.departamentoVendedor,
-    onChange: onChange,
-    placeholder: "Departamento do Vendedor",
-    dica: "Departamento do Vendedor"
-  }
 ];
+
+const fetchDadosEmpresa = async ({ values, setValues }: { values: ValuesSC, setValues: React.Dispatch<SetStateAction<ValuesSC>> }) => {
+  await axios.get("https://api.cnpja.com/office/" + values.cnpjEmpresa, {
+    headers: {
+      Authorization:
+        "ffaafa01-3f8a-43eb-b361-6033430f3f98-55be84d3-2df7-4987-b151-49d9a0b6b0a6",
+    },
+  })
+    .then((response) => {
+      setValues((prev) => ({
+        ...prev,
+        nomeEmpresa: response.data.alias,
+        razaoEmpresa: response.data.company.name,
+      }));
+    })
+    .catch((error) => console.error(error));
+}

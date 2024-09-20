@@ -1,10 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import { Usuario } from '@/interfaces/Usuario';
 import { adminButtons, buttons } from '@/mocks/ButtonsHome';
 import { VerificarPrivilegios } from '@/utils/Verificacoes';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function Home() {
