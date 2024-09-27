@@ -5,12 +5,6 @@ import path from 'path';
 import { promiseConnection } from '@/utils/Connections';
 import jwt from 'jsonwebtoken';
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
 export async function POST(request: NextRequest) {
   const formData = await request.formData();
   const file = formData.get('file') as Blob;
