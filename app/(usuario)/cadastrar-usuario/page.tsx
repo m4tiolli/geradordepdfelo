@@ -21,6 +21,7 @@ function CadastrarUsuario() {
     telefone1: '',
     telefone2: '',
     email: '',
+    assinatura: '',
     administrador: false,
   });
   const [departamentos, setDepartamentos] = useState<Departamentos[]>([]);

@@ -12,7 +12,7 @@ export default function Home() {
 
   useEffect(() => {
     VerificarPrivilegios({ setUsuario, router });
-  }, []);
+  }, [router]);
 
   if (!usuario) {
     return <ActivityIndicator />;

@@ -49,7 +49,7 @@ function Form() {
         React.SetStateAction<Usuario | undefined>
       >,
     });
-  }, []);
+  }, [router]);
 
   const steps = [
     'Dados da Proposta',
@@ -157,7 +157,7 @@ function Form() {
     } else {
       setToken(getToken() as string);
     }
-  });
+  }, [setToken, router]);
 
   useEffect(() => {
     Promise.all([

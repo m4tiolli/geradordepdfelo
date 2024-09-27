@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 import React, { ChangeEvent, useMemo } from 'react';
 import Input from '@/components/Input';
