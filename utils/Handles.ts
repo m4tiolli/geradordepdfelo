@@ -91,7 +91,7 @@ export const handleSubmit = async ({
   }
 };
 
-function formatarData(data: string): string {
+export function formatarData(data: string): string {
   const meses = [
     "janeiro",
     "fevereiro",

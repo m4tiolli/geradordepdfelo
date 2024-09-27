@@ -15,7 +15,7 @@ export async function PUT(req: Request) {
   }
 
   try {
-    const decoded: any = jwt.verify(token, 'secret_key');
+    const decoded: any = jwt.verify(token, 'EloSolutions');
     const senhaNova = bcrypt.hashSync(senha, 10);
     const [result]: any = await promiseConnection.query(
       "UPDATE usuario SET senha = ? WHERE id = ?",

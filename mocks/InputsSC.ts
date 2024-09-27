@@ -85,8 +85,8 @@ export const inputsValoresProposta = ({ values, onChange }: IDados): Inputs[] =>
     name: "valorTecnico",
     value: values.valorTecnico,
     onChange: onChange,
-    placeholder: "Valor Técnico",
-    dica: "Valor Técnico"
+    placeholder: "Valor por Hora do Técnico",
+    dica: "Valor por Hora do Técnico"
   },
   {
     name: "valorKM",
@@ -140,6 +140,13 @@ export const inputsDadosTomador = ({ values, onChange }: IDados): Inputs[] => [
     onChange: onChange,
     placeholder: "Telefone 2 do Tomador",
     dica: "Telefone 2 do Tomador"
+  },
+  {
+    name: "tipoContato",
+    value: values.tipoContato,
+    onChange: onChange,
+    placeholder: "Meio de contato com o tomador",
+    dica: "Ex: WhatsApp"
   },
 ];
 

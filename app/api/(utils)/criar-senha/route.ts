@@ -9,7 +9,7 @@ export async function POST(req: Request) {
 
   if (token) {
     try {
-      const decoded: any = jwt.verify(token.replace('Bearer ', ''), 'secret_key');
+      const decoded: any = jwt.verify(token.replace('Bearer ', ''), 'EloSolutions');
       const id = decoded.id;
 
       const hashedPassword = bcrypt.hashSync(senha, 10);

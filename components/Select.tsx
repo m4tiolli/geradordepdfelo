@@ -8,10 +8,11 @@ interface ISelect {
   onChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   value: string;
   placeholder: string;
-  color?: string
+  color?: string;
+  name: string
 }
 
-function Select({ onChange, value, placeholder, departamentos, color }: ISelect) {
+function Select({ onChange, value, placeholder, departamentos, color, name }: ISelect) {
 
 const classe = `bg-[#ffffff0e] border transition-all ${
           value !== '' ? 'border-[#ffffff]' : 'border-[#ffffff27]'
@@ -24,8 +25,8 @@ const classe = `bg-[#ffffff0e] border transition-all ${
   return (
     <span className="relative flex items-center gap-2">
       <select
-        id="fatorFinanceiroMes"
-        name="fatorFinanceiroMes"
+        id={name}
+        name={name}
         value={value}
         onChange={onChange}
         className={color === "#38457a" ? classeAzul : classe}
@@ -41,7 +42,7 @@ const classe = `bg-[#ffffff0e] border transition-all ${
       </select>
       <Tooltip label={placeholder} fontSize="md">
         <span>
-          <IoMdHelpCircleOutline className="text-white text-2xl" />
+          <IoMdHelpCircleOutline className="text-azul text-2xl" />
         </span>
       </Tooltip>
     </span>

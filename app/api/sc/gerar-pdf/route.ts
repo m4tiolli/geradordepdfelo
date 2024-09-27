@@ -9,6 +9,9 @@ import { Readable } from "stream";
 import { fields } from "./fields";
 import { formatCNPJ, formatDate, formatValor } from "./formats";
 import { ValuesSC } from "@/interfaces/SC";
+import { promiseConnection } from "@/utils/Connections";
+import { RowDataPacket } from "mysql2";
+import { JwtPayload } from "jwt-decode";
 
 export async function POST(req: NextRequest) {
   try {
@@ -37,7 +40,11 @@ export async function POST(req: NextRequest) {
       valorKM,
       valorDiaria,
       condicaoPagamento,
-      elo
+      escopo,
+      dataAtendimento,
+      elo,
+      revisao,
+      tipoProposta
     } = await req.json();
 
     const token = req.headers.get("authorization")?.replace("Bearer ", "");
@@ -48,25 +55,30 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const decoded: any = jwt.verify(token, "secret_key");
+    const decoded: JwtPayload | string = jwt.verify(token, "EloSolutions");
 
     const pdfPathRecuperadora = path.resolve("./public/propostas/sc/MODELO HH RECUPERADORA.pdf")
     const pdfPathServicos = path.resolve("./public/propostas/sc/MODELO HH SERVICOS.pdf")
 
-    const pdfPath = elo === "Recuperadora" ? pdfPathRecuperadora : pdfPathServicos
+    const pdfPath = elo === "R" ? pdfPathRecuperadora : pdfPathServicos
 
     const pdfBytes = fs.readFileSync(pdfPath as PathOrFileDescriptor);
     const pdfDoc = await PDFDocument.load(pdfBytes);
     pdfDoc.registerFontkit(fontkit);
 
     const fontLightBytes = fs.readFileSync(
-      path.resolve("app/api/ef/gerar-pdf/SignikaNegative-Light.ttf")
+      path.resolve("app/api/sc/gerar-pdf/SignikaNegative-Light.ttf")
     );
     const fontLight = await pdfDoc.embedFont(fontLightBytes);
     const fontBoldBytes = fs.readFileSync(
-      path.resolve("app/api/ef/gerar-pdf/SignikaNegative-Regular.ttf")
+      path.resolve("app/api/sc/gerar-pdf/SignikaNegative-Regular.ttf")
     );
     const fontBold = await pdfDoc.embedFont(fontBoldBytes);
+
+    const fontArialBytes = fs.readFileSync(
+      path.resolve("app/api/sc/gerar-pdf/Arial.ttf")
+    );
+    const fontArial = await pdfDoc.embedFont(fontArialBytes)
 
     const form = pdfDoc.getForm();
 
@@ -94,7 +106,9 @@ export async function POST(req: NextRequest) {
       valorKM,
       valorTecnico,
       condicaoPagamento,
-      assinaturaVendedor
+      assinaturaVendedor,
+      dataAtendimento,
+      escopo
     }
 
     const assinaturaBytes = await fetch(assinaturaVendedor).then(res => res.arrayBuffer())
@@ -105,21 +119,22 @@ export async function POST(req: NextRequest) {
       body,
       fontBold,
       fontLight,
+      fontArial,
       formatDate,
       formatCNPJ,
       formatValor,
     }).forEach(({ name, value, font, size }) => {
       const field = form.getTextField(name);
       field.setFontSize(size);
-      field.setText(value);
+      field.setText(value as string);
       field.updateAppearances(font);
     });
 
     form.getButton("Assinatura").setImage(assinatura)
-
+    form.flatten()
     const pdfBytesFilled = await pdfDoc.save();
     codigoProposta.replace(/ /g, "_");
-    const propostaNome = "Proposta_" + codigoProposta;
+    const propostaNome = codigoProposta + " Rev" + revisao;
 
     const client = new Client();
     try {
@@ -142,34 +157,40 @@ export async function POST(req: NextRequest) {
 
       const downloadLink = `https://elosolutions.com.br/propostas/${propostaNome}.pdf`;
 
-      // const query = `
-      //   INSERT INTO propostasSCHH 
-      //   (proposta, cnpjEmpresa, razaoEmpresa, nomeEmpresa, nomeTomador, emailTomador, telefone1Tomador, telefone2Tomador, departamentoTomador, tipoContato, entradaProposta, dataProposta, dataFullProposta, validadeProposta, valorTecnico, condicaoPagamento, elo, link_pdf, ano, id_vendedor) 
-      //   VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-      // `;
+      const tabela = tipoProposta === "Valor Final" ? "propostasSCVF" : "propostasSCHH"
+      const numeroProposta = (codigoProposta as string).slice(7, 11)
+      const query = `
+        INSERT INTO ${tabela} 
+        (proposta, cnpjEmpresa, razaoEmpresa, nomeEmpresa, nomeTomador, emailTomador, telefone1Tomador, telefone2Tomador, departamentoTomador, tipoContato, entradaProposta, dataProposta, dataFullProposta, validadeProposta, valorTecnico, condicaoPagamento, elo, link_pdf, ano, id_vendedor, revisao, dataAtendimento, escopo, numeroProposta) 
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+      `;
 
-      // await promiseConnection.query<RowDataPacket[]>(query, [
-      //   codigoProposta,
-      //   cnpjEmpresa,
-      //   razaoEmpresa,
-      //   nomeEmpresa,
-      //   nomeTomador,
-      //   emailTomador,
-      //   telefone1Tomador,
-      //   telefone2Tomador,
-      //   departamentoTomador,
-      //   tipoContato,
-      //   entradaProposta,
-      //   dataProposta,
-      //   dataFullProposta,
-      //   validadeProposta,
-      //   valorTecnico,
-      //   condicaoPagamento,
-      //   elo,
-      //   downloadLink,
-      //   new Date().getFullYear(),
-      //   decoded.id,
-      // ]);
+      await promiseConnection.query<RowDataPacket[]>(query, [
+        codigoProposta,
+        cnpjEmpresa,
+        razaoEmpresa,
+        nomeEmpresa,
+        nomeTomador,
+        emailTomador,
+        telefone1Tomador,
+        telefone2Tomador,
+        departamentoTomador,
+        tipoContato,
+        entradaProposta,
+        dataProposta,
+        dataFullProposta,
+        validadeProposta,
+        valorTecnico,
+        condicaoPagamento,
+        elo,
+        downloadLink,
+        new Date().getFullYear(),
+        (decoded as { id: string }).id,
+        revisao,
+        dataAtendimento,
+        escopo,
+        parseInt(numeroProposta)
+      ]);
 
       return NextResponse.json({ downloadLink });
     } catch (error) {

@@ -23,4 +23,6 @@ export interface ValuesSC {
   valorKM: string;
   valorDiaria: string;
   condicaoPagamento: string;
+  dataAtendimento: string;
+  escopo: string
 }

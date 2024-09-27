@@ -29,7 +29,7 @@ export async function POST(req: Request) {
 
     const id = rows[0].id
 
-    const token = jwt.sign({ id: id }, "secret_key", {
+    const token = jwt.sign({ id: id }, "EloSolutions", {
       expiresIn: "1h",
     });
 

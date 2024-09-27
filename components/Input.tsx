@@ -28,8 +28,13 @@ export default function Input({
   dica,
   color, // Recebe o color opcional
 }: Readonly<InputProps>) {
-  const telefoneRef = useMask({
+  const telefone1Ref = useMask({
     mask: '(__) _____-____',
+    showMask: true,
+    replacement: { _: /\d/ },
+  });
+  const telefone2Ref = useMask({
+    mask: '(__) ____-____',
     showMask: true,
     replacement: { _: /\d/ },
   });
@@ -44,7 +49,7 @@ export default function Input({
     } outline-none text-sm rounded-md p-2 placeholder:text-[#38457aa6] text-azul ${invalid ? 'invalid border-red-600' : ''
     } ${disabled ? 'opacity-70 cursor-not-allowed' : ''}`
 
-  const inputRef = name.includes('telefone') ? telefoneRef : semRef;
+  const inputRef = name.includes('telefone1') ? telefone1Ref : name.includes('telefone2') ? telefone2Ref : semRef;
 
   const renderInput = () => (
     <input

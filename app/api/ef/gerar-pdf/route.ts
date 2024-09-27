@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const decoded: any = jwt.verify(token, "secret_key");
+    const decoded: any = jwt.verify(token, "EloSolutions");
 
     let mes;
     if (fatorFinanceiroId == 1) {

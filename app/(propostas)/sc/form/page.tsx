@@ -24,6 +24,7 @@ import {
   Radio,
   RadioGroup,
   Stack,
+  Tooltip,
   useDisclosure,
 } from '@chakra-ui/react';
 import { ShowToast } from '@/utils/Toast';
@@ -35,6 +36,9 @@ import Select from '@/components/Select';
 import { VerificarPrivilegios } from '@/utils/Verificacoes';
 import { useRouter } from 'next/navigation';
 import { Usuario } from '@/interfaces/Usuario';
+import { IoMdHelpCircleOutline } from 'react-icons/io';
+import axios from 'axios';
+import { getToken, isTokenValid } from '@/utils/Auth';
 
 function Form() {
   const router = useRouter();
@@ -54,9 +58,8 @@ function Form() {
     'Dados do Tomador',
     'Dados do Vendedor',
   ];
-
   const setUsuario = '';
-  const [tipoProposta, setTipoProposta] = useState('Valor Final');
+  const [tipoProposta, setTipoProposta] = useState('Homem Hora');
   const [elo, setElo] = useState('Serviços');
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -90,6 +93,10 @@ function Form() {
     valorDiaria: '',
     condicaoPagamento:
       '100% (cem por cento) a 7 DDL a partir da conclusão dos serviços, mediante aprovação de cadastro',
+    dataAtendimento:
+      'Data do atendimento a confirmar no envio do pedido/ou aprovação.',
+    escopo:
+      'Serviço de Assistência Técnica para avaliar inversor de frequência XXXXXX, no bairro Vila São Silvestre na cidade de Barueri.',
   });
   const [activeStep, setActiveStep] = useState(0);
 
@@ -106,13 +113,27 @@ function Form() {
   });
   const [isLastStep, setIsLastStep] = React.useState(false);
   const [isFirstStep, setIsFirstStep] = React.useState(false);
-
-  const handleNext = () => !isLastStep && setActiveStep((cur) => cur + 1);
+  const [token, setToken] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const handleNext = () => {
+    if (!isLastStep) {
+      setActiveStep((cur) => cur + 1);
+    } else {
+      gerarPdf();
+    }
+  };
   const handlePrev = () => !isFirstStep && setActiveStep((cur) => cur - 1);
-
   const onChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setValues((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handle = () => {
+    if (isLastStep) {
+      gerarPdf();
+    } else {
+      handleNext();
+    }
   };
 
   const inputs = [
@@ -122,6 +143,21 @@ function Form() {
     inputsDadosTomador({ values, onChange, setValues }),
     inputsDadosVendedor({ values, onChange, setValues }),
   ];
+
+  useEffect(() => {
+    if (!isTokenValid()) {
+      ShowToast({
+        type: 'error',
+        text: 'Sessão expirada, faça o login novamente',
+        options: { position: 'top-center' },
+      });
+      setTimeout(() => {
+        router.push('/login');
+      }, 2000);
+    } else {
+      setToken(getToken() as string);
+    }
+  });
 
   useEffect(() => {
     Promise.all([
@@ -158,6 +194,42 @@ function Form() {
     return <ActivityIndicator />;
   }
 
+  const gerarPdf = async () => {
+    setIsLoading(true);
+    const body = {
+      ...values,
+      elo: elo === "Serviços" ? "S" : "R",
+      revisao: 1,
+      tipoProposta
+    };
+    
+    await axios
+      .post('/api/sc/gerar-pdf', body, {
+        headers: { Authorization: token },
+      })
+      .then(() => {
+        setIsLoading(false);
+        ShowToast({
+          text: 'Proposta gerada com sucesso!',
+          type: 'success',
+          options: {
+            position: 'top-center',
+          },
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        ShowToast({
+          text: 'Ocorreu um erro ao gerar a proposta.',
+          type: 'error',
+          options: {
+            position: 'top-center',
+          },
+        });
+        setIsLoading(false);
+      });
+  };
+  
   return (
     <main className="h-dvh w-full flex flex-col items-center justify-center z-10">
       <div className="w-3/5 flex flex-col items-center gap-8 relative">
@@ -231,6 +303,74 @@ function Form() {
               <p className="text-md font-medium">{input.placeholder}</p>
             </div>
           ))}
+
+          {activeStep === 0 && (
+            <>
+              <div className="w-full">
+                <span className="relative flex items-center gap-2">
+                  <textarea
+                    onChange={(e) =>
+                      setValues((prev) => ({
+                        ...prev,
+                        escopo: e.target.value,
+                      }))
+                    }
+                    name=""
+                    id=""
+                    rows={3}
+                    cols={1}
+                    className={`appearance-none bg-[#38457a0e] border min-w-fit w-full transition-all ${
+                      values.escopo !== ''
+                        ? 'border-[#38457a]'
+                        : 'border-[#38457a27]'
+                    } outline-none text-sm rounded-md p-2 placeholder:text-[#38457aa6] text-azul`}
+                  >
+                    {values.escopo}
+                  </textarea>
+                  <Tooltip label={'Escopo do serviço'} fontSize="md">
+                    <span>
+                      <IoMdHelpCircleOutline className="text-azul text-2xl" />
+                    </span>
+                  </Tooltip>
+                </span>
+                <p className="text-md font-medium">Escopo</p>
+              </div>
+
+              <div className="w-full">
+                <span className="relative flex items-center gap-2">
+                  <textarea
+                    onChange={(e) =>
+                      setValues((prev) => ({
+                        ...prev,
+                        dataAtendimento: e.target.value,
+                      }))
+                    }
+                    name=""
+                    id=""
+                    rows={3}
+                    cols={1}
+                    className={`appearance-none bg-[#38457a0e] border min-w-fit w-full transition-all ${
+                      values.dataAtendimento !== ''
+                        ? 'border-[#38457a]'
+                        : 'border-[#38457a27]'
+                    } outline-none text-sm rounded-md p-2 placeholder:text-[#38457aa6] text-azul`}
+                  >
+                    {values.dataAtendimento}
+                  </textarea>
+                  <Tooltip
+                    label={'Data do atendimento do serviço'}
+                    fontSize="md"
+                  >
+                    <span>
+                      <IoMdHelpCircleOutline className="text-azul text-2xl" />
+                    </span>
+                  </Tooltip>
+                </span>
+                <p className="text-md font-medium">Data do Atendimento</p>
+              </div>
+            </>
+          )}
+
           {activeStep === 3 && (
             <div>
               <Select
@@ -239,6 +379,7 @@ function Form() {
                 value={values.departamentoTomador}
                 placeholder={'Departamento do tomador'}
                 color="#38457a"
+                name="departamentoTomador"
               />
               <p className="text-md font-medium">Departamento do tomador</p>
             </div>
@@ -252,6 +393,7 @@ function Form() {
                 value={values.departamentoVendedor}
                 placeholder={'Departamento do vendedor'}
                 color="#38457a"
+                name="departamentoVendedor"
               />
               <p className="text-md font-medium">Departamento do vendedor</p>
             </div>
@@ -262,21 +404,26 @@ function Form() {
             onClick={handlePrev}
             disabled={isFirstStep}
             className={`text-white font-semibold rounded-md
-                        text-xl px-4 py-2 transition-all hover:opacity-60 ${
-                          isFirstStep
-                            ? 'bg-[#8d99c9] cursor-not-allowed'
-                            : 'bg-azul cursor-pointer'
-                        }`}
+                          text-xl px-4 py-2 transition-all hover:opacity-60 ${
+                            isFirstStep
+                              ? 'bg-[#8d99c9] cursor-not-allowed'
+                              : 'bg-azul cursor-pointer'
+                          }`}
           >
             Voltar
           </button>
           <button
-            onClick={handleNext}
-            disabled={isLastStep}
-            className={`text-white font-semibold rounded-md
-                        text-xl px-4 py-2 cursor-pointer transition-all hover:opacity-60 bg-azul `}
+            onClick={handle}
+            className={`text-white font-semibold rounded-md grid place-items-center
+                          text-xl w-32 px-4 py-2 cursor-pointer transition-all hover:opacity-60 bg-azul `}
           >
-            {isLastStep ? 'Finalizar' : 'Avançar'}
+            {isLoading ? (
+              <ActivityIndicator color={'azul'} />
+            ) : isLastStep ? (
+              'Finalizar'
+            ) : (
+              'Avançar'
+            )}
           </button>
         </div>
       </div>

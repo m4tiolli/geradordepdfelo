@@ -6,4 +6,5 @@ export interface Usuario {
   telefone2: string;
   email: string;
   administrador: boolean | number;
+  assinatura: string;
 }

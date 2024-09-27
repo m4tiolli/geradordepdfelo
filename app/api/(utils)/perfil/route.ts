@@ -11,7 +11,7 @@ export async function GET(req: Request) {
   }
 
   try {
-    const decoded: any = jwt.verify(token.replace('Bearer ', ''), 'secret_key');
+    const decoded: any = jwt.verify(token.replace('Bearer ', ''), 'EloSolutions');
     const query = "SELECT * FROM usuario WHERE id = ?";
     const [results] = await promiseConnection.query<RowDataPacket[]>(query, [decoded.id]);
 
@@ -38,7 +38,7 @@ export async function PUT(req: Request) {
       return NextResponse.json({ auth: false, message: 'No token provided' }, { status: 401 });
     }
 
-    const decoded: any = jwt.verify(token, 'secret_key');
+    const decoded: any = jwt.verify(token, 'EloSolutions');
 
     const { nome, email, telefone1, telefone2, departamento } = await req.json();
 

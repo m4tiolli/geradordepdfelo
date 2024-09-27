@@ -55,6 +55,7 @@ export const fetchUsuario = async (
         telefone1Vendedor: response.data.telefone1,
         telefone2Vendedor: response.data.telefone2,
         emailVendedor: response.data.email,
+        assinaturaVendedor: response.data.assinatura
       })),
     )
     .catch((error) => console.error(error));
