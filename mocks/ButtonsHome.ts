@@ -7,15 +7,15 @@ export const buttons = (router: AppRouterInstance) => [
     action: () => router.push("/selecionar-proposta"),
   },
   {
-    label: "Visualizar propostas",
+    label: "Procurar proposta",
     action: () => router.push("/visualizar-propostas"),
   },
   {
-    label: "Atualizar dados do perfil",
+    label: "Atualizar meus dados",
     action: () => router.push("/perfil"),
   },
   {
-    label: "Alterar senha",
+    label: "Alterar minha senha",
     action: () => router.push("/alterar-senha"),
   },
   {
