@@ -44,10 +44,7 @@ function Form() {
   const router = useRouter();
   useEffect(() => {
     VerificarPrivilegios({
-      router,
-      setUsuario: setUsuario as unknown as React.Dispatch<
-        React.SetStateAction<Usuario | undefined>
-      >,
+      router
     });
   }, [router]);
 
@@ -58,7 +55,6 @@ function Form() {
     'Dados do Tomador',
     'Dados do Vendedor',
   ];
-  const setUsuario = '';
   const [tipoProposta, setTipoProposta] = useState('Homem Hora');
   const [elo, setElo] = useState('Serviços');
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -177,8 +173,8 @@ function Form() {
             ? propostas.propostasHH.propostaSH
             : propostas.propostasHH.propostaRH
           : elo === 'Serviços'
-          ? propostas.propostasVF.propostaSF
-          : propostas.propostasVF.propostaRF,
+            ? propostas.propostasVF.propostaSF
+            : propostas.propostasVF.propostaRF,
     }));
   }, [propostas, tipoProposta, elo]);
 
@@ -202,7 +198,7 @@ function Form() {
       revisao: 1,
       tipoProposta
     };
-    
+
     await axios
       .post('/api/sc/gerar-pdf', body, {
         headers: { Authorization: token },
@@ -229,7 +225,7 @@ function Form() {
         setIsLoading(false);
       });
   };
-  
+
   return (
     <main className="h-dvh w-full flex flex-col items-center justify-center z-10">
       <div className="w-3/5 flex flex-col items-center gap-8 relative">
@@ -286,9 +282,8 @@ function Form() {
               {index + 1}
               <div className="absolute -bottom-[2rem] w-max text-center">
                 <p
-                  className={`font-semibold transition-all ${
-                    activeStep < index ? 'text-[#8d99c9]' : 'text-azul'
-                  }`}
+                  className={`font-semibold transition-all ${activeStep < index ? 'text-[#8d99c9]' : 'text-azul'
+                    }`}
                 >
                   {step}
                 </p>
@@ -319,11 +314,10 @@ function Form() {
                     id=""
                     rows={3}
                     cols={1}
-                    className={`appearance-none bg-[#38457a0e] border min-w-fit w-full transition-all ${
-                      values.escopo !== ''
+                    className={`appearance-none bg-[#38457a0e] border min-w-fit w-full transition-all ${values.escopo !== ''
                         ? 'border-[#38457a]'
                         : 'border-[#38457a27]'
-                    } outline-none text-sm rounded-md p-2 placeholder:text-[#38457aa6] text-azul`}
+                      } outline-none text-sm rounded-md p-2 placeholder:text-[#38457aa6] text-azul`}
                   >
                     {values.escopo}
                   </textarea>
@@ -349,11 +343,10 @@ function Form() {
                     id=""
                     rows={3}
                     cols={1}
-                    className={`appearance-none bg-[#38457a0e] border min-w-fit w-full transition-all ${
-                      values.dataAtendimento !== ''
+                    className={`appearance-none bg-[#38457a0e] border min-w-fit w-full transition-all ${values.dataAtendimento !== ''
                         ? 'border-[#38457a]'
                         : 'border-[#38457a27]'
-                    } outline-none text-sm rounded-md p-2 placeholder:text-[#38457aa6] text-azul`}
+                      } outline-none text-sm rounded-md p-2 placeholder:text-[#38457aa6] text-azul`}
                   >
                     {values.dataAtendimento}
                   </textarea>
@@ -404,11 +397,10 @@ function Form() {
             onClick={handlePrev}
             disabled={isFirstStep}
             className={`text-white font-semibold rounded-md
-                          text-xl px-4 py-2 transition-all hover:opacity-60 ${
-                            isFirstStep
-                              ? 'bg-[#8d99c9] cursor-not-allowed'
-                              : 'bg-azul cursor-pointer'
-                          }`}
+                          text-xl px-4 py-2 transition-all hover:opacity-60 ${isFirstStep
+                ? 'bg-[#8d99c9] cursor-not-allowed'
+                : 'bg-azul cursor-pointer'
+              }`}
           >
             Voltar
           </button>

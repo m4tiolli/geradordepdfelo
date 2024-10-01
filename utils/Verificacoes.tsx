@@ -7,7 +7,7 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 import { ShowToast } from "./Toast";
 
 interface IVerificarPrivilegios {
-  setUsuario: Dispatch<SetStateAction<Usuario | undefined>>;
+  setUsuario?: Dispatch<SetStateAction<Usuario | undefined>>;
   router: AppRouterInstance;
 }
 
@@ -25,6 +25,8 @@ export const VerificarPrivilegios = async ({
       router.push("/login");
     }, 2000);
   } else {
-    await fetchPrevilegios(setUsuario);
+    if(setUsuario){
+      await fetchPrevilegios(setUsuario);
+    }
   }
 };
