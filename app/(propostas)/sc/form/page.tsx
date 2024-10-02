@@ -187,7 +187,7 @@ function Form() {
   }, [departamentos.length, propostas]);
 
   if (isDataLoading) {
-    return <ActivityIndicator />;
+    return <ActivityIndicator color='#38457a' />;
   }
 
   const gerarPdf = async () => {
@@ -202,6 +202,7 @@ function Form() {
     await axios
       .post('/api/sc/gerar-pdf', body, {
         headers: { Authorization: token },
+        timeout: 30000
       })
       .then(() => {
         setIsLoading(false);

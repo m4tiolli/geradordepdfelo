@@ -12,6 +12,7 @@ import { ValuesSC } from "@/interfaces/SC";
 import { promiseConnection } from "@/utils/Connections";
 import { RowDataPacket } from "mysql2";
 import { JwtPayload } from "jwt-decode";
+import { formatarData } from "@/utils/Handles";
 
 export async function POST(req: NextRequest) {
   try {
@@ -33,7 +34,6 @@ export async function POST(req: NextRequest) {
       tipoContato,
       entradaProposta,
       dataProposta,
-      dataFullProposta,
       codigoProposta,
       validadeProposta,
       valorTecnico,
@@ -63,25 +63,25 @@ export async function POST(req: NextRequest) {
     const pdfPath = elo === "R" ? pdfPathRecuperadora : pdfPathServicos
 
     const pdfBytes = fs.readFileSync(pdfPath as PathOrFileDescriptor);
-    const pdfDoc = await PDFDocument.load(pdfBytes);
+    const pdfDoc = await PDFDocument.load(pdfBytes as unknown as ArrayBuffer);
     pdfDoc.registerFontkit(fontkit);
 
     const fontLightBytes = fs.readFileSync(
       path.resolve("app/api/sc/gerar-pdf/SignikaNegative-Light.ttf")
     );
-    const fontLight = await pdfDoc.embedFont(fontLightBytes);
+    const fontLight = await pdfDoc.embedFont(fontLightBytes as unknown as ArrayBuffer);
     const fontBoldBytes = fs.readFileSync(
       path.resolve("app/api/sc/gerar-pdf/SignikaNegative-Regular.ttf")
     );
-    const fontBold = await pdfDoc.embedFont(fontBoldBytes);
+    const fontBold = await pdfDoc.embedFont(fontBoldBytes as unknown as ArrayBuffer);
 
     const fontArialBytes = fs.readFileSync(
       path.resolve("app/api/sc/gerar-pdf/Arial.ttf")
     );
-    const fontArial = await pdfDoc.embedFont(fontArialBytes)
+    const fontArial = await pdfDoc.embedFont(fontArialBytes as unknown as ArrayBuffer)
 
     const form = pdfDoc.getForm();
-
+    const dataFullProposta = formatarData(dataProposta)
     const body: ValuesSC = {
       cnpjEmpresa,
       nomeEmpresa,
