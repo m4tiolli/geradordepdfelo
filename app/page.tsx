@@ -5,14 +5,22 @@ import { adminButtons, buttons } from '@/mocks/ButtonsHome';
 import { VerificarPrivilegios } from '@/utils/Verificacoes';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Button, ButtonGroup, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, useDisclosure } from '@chakra-ui/react';
 
 export default function Home() {
   const [usuario, setUsuario] = useState<Usuario>();
   const router = useRouter();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     VerificarPrivilegios({ setUsuario, router });
   }, [router]);
+
+  useEffect(() => {
+    if (usuario && !usuario.assinatura) {
+      onOpen();
+    }
+  }, [usuario]);
 
   if (!usuario) {
     return <ActivityIndicator />;
@@ -48,6 +56,20 @@ export default function Home() {
             </button>
           ))}
       </div>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Lembrete</ModalHeader>
+          <ModalBody>Você ainda não cadastrou a sua assinatura. Propostas geradas por você não terão sua assinatura</ModalBody>
+          <ModalFooter>
+            <ButtonGroup gap={'16px'}>
+              <Button onClick={onClose} variant={'ghost'}>Fechar</Button>
+              <Button onClick={() => router.push("/perfil")} colorScheme='green'>Cadastrar assinatura</Button>
+            </ButtonGroup>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   );
 }

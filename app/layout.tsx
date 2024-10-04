@@ -7,6 +7,7 @@ import logofull from "@/public/logo-full.svg";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Providers } from "./providers";
+import React from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,7 +26,7 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body
         className={
-          "relative w-full h-dvh flex items-center justify-center flex-col" +
+          "relative w-full min-h-dvh flex items-center justify-center flex-col" +
           inter.className
         }
       >
@@ -35,27 +36,27 @@ export default function RootLayout({
             draggable="false"
             src={svg}
             alt=" "
-            className="absolute top-0 left-0 z-0 select-none"
+            className="fixed top-0 left-0 z-0 select-none"
             priority
           />
           <Image
             draggable="false"
             src={svg}
             alt=" "
-            className="absolute right-0 bottom-0 -scale-100 z-0 select-none"
+            className="fixed right-0 bottom-0 -scale-100 z-0 select-none"
             priority
           />
           <Image
             draggable="false"
             src={logofull}
             alt=" "
-            className="absolute bottom-4 left-4 w-52 z-0 select-none"
+            className="fixed bottom-4 left-4 w-52 z-0 select-none"
           />
           <Image
             draggable="false"
             src={logofull}
             alt=" "
-            className="absolute top-4 right-4 w-52 z-0 select-none"
+            className="fixed top-4 right-4 w-52 z-0 select-none"
           />
           {children}
         </Providers>

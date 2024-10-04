@@ -33,4 +33,8 @@ export const adminButtons = (router: AppRouterInstance) => [
     label: "Visualizar usuários",
     action: () => router.push("/visualizar-usuario"),
   },
+  {
+    label: "Alterar valores",
+    action: () => router.push("/alterar-variaveis")
+  }
 ];

@@ -1,9 +1,30 @@
+'use client'
 import { Proposta as Prop } from '@/interfaces/Proposta';
+import PDFAtivo from '@/utils/Context';
+import { Button } from '@chakra-ui/react';
 import axios from 'axios';
+import React, { useContext, useState } from 'react';
+import { pdfjs, Document, Page } from 'react-pdf';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+import ActivityIndicator from './ActivityIndicator';
 
-function Proposta(prop: Readonly<Prop>) {
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.mjs',
+  import.meta.url,
+).toString();
+
+interface IProposta extends Prop {
+  onOpen: () => void
+}
+
+function Proposta(prop: IProposta) {
+
+const [isLoading, setIsLoading] = useState(false)
+
   const link = prop.link_pdf;
   const downloadPdf = async () => {
+    setIsLoading(true);
     const res = await axios.get(link, { responseType: 'blob' });
     const url = window.URL.createObjectURL(res.data);
     const a = document.createElement('a');
@@ -12,33 +33,30 @@ function Proposta(prop: Readonly<Prop>) {
     a.click();
     window.URL.revokeObjectURL(url);
     a.remove();
+    setIsLoading(false)
   };
 
+  const [numPages, setNumPages] = useState<number>();
+  const [pageNumber, setPageNumber] = useState<number>(1);
+
+  function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
+    setNumPages(numPages);
+  }
+
+  const [pdfAtivo, setPdfAtivo] = useContext(PDFAtivo)
+
   return (
-    <div className="bg-azul w-full flex items-center justify-between rounded-md px-3 py-2">
-      <div>
-        <p className="text-white text-xl font-semibold">{prop.proposta}</p>
-        <p className="text-white text-lg font-normal">{prop.nomeEmpresa}</p>
+    <div className='h-fit w-fit p-4 rounded-md bg-[#efefef] shadow-lg flex flex-col items-center justify-center gap-6'>
+      <Document onClick={() => { setPdfAtivo(prop); prop.onOpen() }} className={"cursor-pointer transition-all hover:opacity-60"} file="https://elosolutions.com.br/propostas/ELOSCH%200005R24%20Rev1.pdf" onLoadSuccess={onDocumentLoadSuccess}>
+        <Page className={"cursor-pointer"} pageNumber={pageNumber} height={200} width={150} />
+      </Document>
+      <div className='flex items-center justify-center flex-col gap-1'>
+        <h1 className='font-bold text-xl'>{prop.proposta}</h1>
+        <h3 className='font-normal text-lg'>{prop.nomeEmpresa}</h3>
       </div>
-      <div className="text-right">
-        <p className="text-white text-xl font-semibold">{prop.data}</p>
-        <p className="text-white text-md font-normal">
-          Enviada por: {prop.nomeVendedor}
-        </p>
-      </div>
-      <div className="flex gap-3">
-        <button
-          className="w-fit font-semibold border border-[#ffffffa6] hover:bg-[#ffffff16] transition-all text-white rounded-md p-2"
-          onClick={() => window.open(prop.link_pdf, '_blank')}
-        >
-          Ver
-        </button>
-        <button
-          className="w-fit font-semibold border bg-[#ffffffa6] text-azul transition-all hover:opacity-60 rounded-md p-2"
-          onClick={downloadPdf}
-        >
-          Baixar
-        </button>
+      <div className='flex gap-4 items-center justify-center'>
+        <Button variant={"outline"} onClick={() => { setPdfAtivo(prop); prop.onOpen() }} colorScheme='green'>Ver</Button>
+        <Button colorScheme='green' onClick={downloadPdf}>{isLoading ? <ActivityIndicator/> : "Baixar"}</Button>
       </div>
     </div>
   );

@@ -63,6 +63,7 @@ function Form() {
     onOpen: onEloOpen,
     onClose: onEloClose,
   } = useDisclosure();
+  const {isOpen: isSucessoOpen, onOpen: onSucessoOpen, onClose: onSucessoClose} = useDisclosure()
   const [values, setValues] = useState<ValuesSC>({
     cnpjEmpresa: '',
     razaoEmpresa: '',
@@ -111,6 +112,7 @@ function Form() {
   const [isFirstStep, setIsFirstStep] = React.useState(false);
   const [token, setToken] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [linkPdf, setLinkPdf] = useState("")
   const handleNext = () => {
     if (!isLastStep) {
       setActiveStep((cur) => cur + 1);
@@ -204,7 +206,8 @@ function Form() {
         headers: { Authorization: token },
         timeout: 30000
       })
-      .then(() => {
+      .then((response) => {
+        setLinkPdf(response.data.downloadLink)
         setIsLoading(false);
         ShowToast({
           text: 'Proposta gerada com sucesso!',
@@ -213,6 +216,7 @@ function Form() {
             position: 'top-center',
           },
         });
+        onSucessoOpen()
       })
       .catch((err) => {
         console.log(err);
@@ -500,6 +504,28 @@ function Form() {
               </Button>
             </ButtonGroup>
           </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={isSucessoOpen} onClose={onSucessoClose} >
+        <ModalOverlay/>
+        <ModalContent>
+          <ModalHeader>Proposta gerada!</ModalHeader>
+          <ModalBody>A proposta foi gerada com sucesso e já está disponível para visualização.</ModalBody>
+          <ModalFooter><ButtonGroup gap={'16px'}>
+              <Button
+                variant={'ghost'}
+                onClick={() => router.push("/")}
+              >
+                Voltar
+              </Button>
+              <Button
+                colorScheme={'green'}
+                onClick={() => window.open(linkPdf, "_blank")}
+              >
+                Visualizar
+              </Button>
+            </ButtonGroup></ModalFooter>
         </ModalContent>
       </Modal>
     </main>

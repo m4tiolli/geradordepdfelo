@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     const id = rows[0].id
 
     const token = jwt.sign({ id: id }, "EloSolutions", {
-      expiresIn: "1h",
+      expiresIn: "7d",
     });
 
     const url = `https://geradordepdfelo.vercel.app/criar-senha?token=${token}`
