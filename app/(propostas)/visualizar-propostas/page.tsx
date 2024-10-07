@@ -35,10 +35,7 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 import PDFAtivo from '@/utils/Context';
 
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.mjs',
-  import.meta.url,
-).toString();
+pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.7.76/build/pdf.worker.min.mjs`;
 
 function VisualizarPropostas() {
   const [propostas, setPropostas] = useState<Prop[]>([]);
@@ -97,7 +94,6 @@ function VisualizarPropostas() {
 
   const { isOpen: isVerOpen, onOpen: onVerOpen, onClose: onVerClose } = useDisclosure()
   const [numPages, setNumPages] = useState<number>();
-  const [pageNumber, setPageNumber] = useState<number>(1);
 
   function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
     setNumPages(numPages);
