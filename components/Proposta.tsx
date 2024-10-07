@@ -3,16 +3,13 @@ import { Proposta as Prop } from '@/interfaces/Proposta';
 import PDFAtivo from '@/utils/Context';
 import { Button } from '@chakra-ui/react';
 import axios from 'axios';
-import React, { useContext, useState } from 'react';
+import React, { SetStateAction, useContext, useState } from 'react';
 import { pdfjs, Document, Page } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 import ActivityIndicator from './ActivityIndicator';
 
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.mjs',
-  import.meta.url,
-).toString();
+pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.7.76/build/pdf.worker.min.mjs`;
 
 interface IProposta extends Prop {
   onOpen: () => void
@@ -47,7 +44,7 @@ const [isLoading, setIsLoading] = useState(false)
 
   return (
     <div className='h-fit w-fit p-4 rounded-md bg-[#efefef] shadow-lg flex flex-col items-center justify-center gap-6'>
-      <Document onClick={() => { setPdfAtivo(prop); prop.onOpen() }} className={"cursor-pointer transition-all hover:opacity-60"} file="https://elosolutions.com.br/propostas/ELOSCH%200005R24%20Rev1.pdf" onLoadSuccess={onDocumentLoadSuccess}>
+      <Document onClick={() => { (setPdfAtivo as React.Dispatch<SetStateAction<IProposta>>)(prop); prop.onOpen() }} className={"cursor-pointer transition-all hover:opacity-60"} file="https://elosolutions.com.br/propostas/ELOSCH%200005R24%20Rev1.pdf" onLoadSuccess={onDocumentLoadSuccess}>
         <Page className={"cursor-pointer"} pageNumber={pageNumber} height={200} width={150} />
       </Document>
       <div className='flex items-center justify-center flex-col gap-1'>
@@ -55,7 +52,7 @@ const [isLoading, setIsLoading] = useState(false)
         <h3 className='font-normal text-lg'>{prop.nomeEmpresa}</h3>
       </div>
       <div className='flex gap-4 items-center justify-center'>
-        <Button variant={"outline"} onClick={() => { setPdfAtivo(prop); prop.onOpen() }} colorScheme='green'>Ver</Button>
+        <Button variant={"outline"} onClick={() => { (setPdfAtivo as React.Dispatch<SetStateAction<IProposta>>)(prop); prop.onOpen() }} colorScheme='green'>Ver</Button>
         <Button colorScheme='green' onClick={downloadPdf}>{isLoading ? <ActivityIndicator/> : "Baixar"}</Button>
       </div>
     </div>

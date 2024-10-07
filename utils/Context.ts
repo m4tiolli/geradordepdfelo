@@ -1,5 +1,5 @@
 import { createContext } from 'react';
 
-const PDFAtivo = createContext({});
+const PDFAtivo = createContext([]);
 
 export default PDFAtivo;

@@ -116,7 +116,7 @@ function VisualizarPropostas() {
 
   console.log(pdfAtivo)
   return (
-    <PDFAtivo.Provider value={[pdfAtivo, setPdfAtivo]}>
+    <PDFAtivo.Provider value={[pdfAtivo, setPdfAtivo] as never}>
       <div className="flex flex-col w-screen mt-[15dvh] pb-[20dvh] gap-4 items-center justify-center relative z-20">
         <div className='top-0 left-0 fixed w-screen h-[10dvh] backdrop-blur-sm shadow-md flex items-center justify-center z-50'>
           <div className="flex items-center justify-between w-1/3 bg-azul p-2 rounded-md">
@@ -292,7 +292,7 @@ function VisualizarPropostas() {
               <div className='flex items-stretch justify-between'>
                 <div className='overflow-y-auto w-[50vw] h-[65dvh]'>
                   <Document file={"https://elosolutions.com.br/propostas/ELOSCH%200005R24%20Rev1.pdf"} onLoadSuccess={onDocumentLoadSuccess}>
-                    {Array.from({ length: numPages }, (_, index) => (
+                    {Array.from({ length: numPages as number }, (_, index) => (
                       <Page key={index} pageNumber={index + 1} width={650} />
                     ))}
                   </Document>
