@@ -1,14 +1,4 @@
 'use client'
-import { Proposta as Prop } from '@/interfaces/Proposta';
-import PDFAtivo from '@/utils/Context';
-import { Button } from '@chakra-ui/react';
-import axios from 'axios';
-import React, { SetStateAction, useContext, useState } from 'react';
-import { pdfjs, Document, Page } from 'react-pdf';
-import 'react-pdf/dist/Page/AnnotationLayer.css';
-import 'react-pdf/dist/Page/TextLayer.css';
-import ActivityIndicator from './ActivityIndicator';
-
 if (typeof Promise.withResolvers === "undefined") {
   if (window) {
     // @ts-expect-error This does not exist outside of polyfill which this is doing
@@ -32,6 +22,15 @@ if (typeof Promise.withResolvers === "undefined") {
     }
   }
 }
+import { Proposta as Prop } from '@/interfaces/Proposta';
+import PDFAtivo from '@/utils/Context';
+import { Button } from '@chakra-ui/react';
+import axios from 'axios';
+import React, { SetStateAction, useContext, useState } from 'react';
+import { pdfjs, Document, Page } from 'react-pdf';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+import ActivityIndicator from './ActivityIndicator';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@4.4.168/legacy/build/pdf.worker.min.mjs`;
 
