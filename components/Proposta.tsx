@@ -9,7 +9,7 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 import ActivityIndicator from './ActivityIndicator';
 
-pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.7.76/build/pdf.worker.min.mjs`;
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs`;
 
 interface IProposta extends Prop {
   onOpen: () => void
@@ -17,7 +17,7 @@ interface IProposta extends Prop {
 
 function Proposta(prop: IProposta) {
 
-const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const link = prop.link_pdf;
   const downloadPdf = async () => {
@@ -34,7 +34,8 @@ const [isLoading, setIsLoading] = useState(false)
   };
 
   const [numPages, setNumPages] = useState<number>();
-  const [pageNumber, setPageNumber] = useState<number>(1);
+
+  console.log(numPages);
 
   function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
     setNumPages(numPages);
@@ -45,7 +46,7 @@ const [isLoading, setIsLoading] = useState(false)
   return (
     <div className='h-fit w-fit p-4 rounded-md bg-[#efefef] shadow-lg flex flex-col items-center justify-center gap-6'>
       <Document onClick={() => { (setPdfAtivo as React.Dispatch<SetStateAction<IProposta>>)(prop); prop.onOpen() }} className={"cursor-pointer transition-all hover:opacity-60"} file="https://elosolutions.com.br/propostas/ELOSCH%200005R24%20Rev1.pdf" onLoadSuccess={onDocumentLoadSuccess}>
-        <Page className={"cursor-pointer"} pageNumber={pageNumber} height={200} width={150} />
+        <Page className={"cursor-pointer"} pageNumber={1} height={200} width={150} />
       </Document>
       <div className='flex items-center justify-center flex-col gap-1'>
         <h1 className='font-bold text-xl'>{prop.proposta}</h1>
@@ -53,7 +54,7 @@ const [isLoading, setIsLoading] = useState(false)
       </div>
       <div className='flex gap-4 items-center justify-center'>
         <Button variant={"outline"} onClick={() => { (setPdfAtivo as React.Dispatch<SetStateAction<IProposta>>)(prop); prop.onOpen() }} colorScheme='green'>Ver</Button>
-        <Button colorScheme='green' onClick={downloadPdf}>{isLoading ? <ActivityIndicator/> : "Baixar"}</Button>
+        <Button colorScheme='green' onClick={downloadPdf}>{isLoading ? <ActivityIndicator /> : "Baixar"}</Button>
       </div>
     </div>
   );

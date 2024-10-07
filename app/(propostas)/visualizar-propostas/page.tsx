@@ -35,7 +35,7 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 import PDFAtivo from '@/utils/Context';
 
-pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.7.76/build/pdf.worker.min.mjs`;
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs`;
 
 function VisualizarPropostas() {
   const [propostas, setPropostas] = useState<Prop[]>([]);
@@ -114,7 +114,6 @@ function VisualizarPropostas() {
     setIsLoading(false)
   };
 
-  console.log(pdfAtivo)
   return (
     <PDFAtivo.Provider value={[pdfAtivo, setPdfAtivo] as never}>
       <div className="flex flex-col w-screen mt-[15dvh] pb-[20dvh] gap-4 items-center justify-center relative z-20">
