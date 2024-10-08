@@ -1,16 +1,4 @@
 'use client'
-if (typeof Promise.withResolvers === 'undefined') {
-  if (window)
-    // @ts-expect-error This does not exist outside of polyfill which this is doing
-    window.Promise.withResolvers = function () {
-      let resolve, reject;
-      const promise = new Promise((res, rej) => {
-        resolve = res;
-        reject = rej;
-      });
-      return { promise, resolve, reject };
-    };
-}
 import { Proposta as Prop } from '@/interfaces/Proposta';
 import PDFAtivo from '@/utils/Context';
 import { Button } from '@chakra-ui/react';
