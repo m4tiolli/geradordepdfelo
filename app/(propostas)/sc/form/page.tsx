@@ -35,7 +35,6 @@ import { fetchPropostas, fetchUsuario, fetchValores } from './fetchs';
 import Select from '@/components/Select';
 import { VerificarPrivilegios } from '@/utils/Verificacoes';
 import { useRouter } from 'next/navigation';
-import { Usuario } from '@/interfaces/Usuario';
 import { IoMdHelpCircleOutline } from 'react-icons/io';
 import axios from 'axios';
 import { getToken, isTokenValid } from '@/utils/Auth';
@@ -63,7 +62,7 @@ function Form() {
     onOpen: onEloOpen,
     onClose: onEloClose,
   } = useDisclosure();
-  const {isOpen: isSucessoOpen, onOpen: onSucessoOpen, onClose: onSucessoClose} = useDisclosure()
+  const { isOpen: isSucessoOpen, onOpen: onSucessoOpen, onClose: onSucessoClose } = useDisclosure()
   const [values, setValues] = useState<ValuesSC>({
     cnpjEmpresa: '',
     razaoEmpresa: '',
@@ -320,8 +319,8 @@ function Form() {
                     rows={3}
                     cols={1}
                     className={`appearance-none bg-[#38457a0e] border min-w-fit w-full transition-all ${values.escopo !== ''
-                        ? 'border-[#38457a]'
-                        : 'border-[#38457a27]'
+                      ? 'border-[#38457a]'
+                      : 'border-[#38457a27]'
                       } outline-none text-sm rounded-md p-2 placeholder:text-[#38457aa6] text-azul`}
                   >
                     {values.escopo}
@@ -349,8 +348,8 @@ function Form() {
                     rows={3}
                     cols={1}
                     className={`appearance-none bg-[#38457a0e] border min-w-fit w-full transition-all ${values.dataAtendimento !== ''
-                        ? 'border-[#38457a]'
-                        : 'border-[#38457a27]'
+                      ? 'border-[#38457a]'
+                      : 'border-[#38457a27]'
                       } outline-none text-sm rounded-md p-2 placeholder:text-[#38457aa6] text-azul`}
                   >
                     {values.dataAtendimento}
@@ -508,11 +507,12 @@ function Form() {
       </Modal>
 
       <Modal isOpen={isSucessoOpen} onClose={onSucessoClose} >
-        <ModalOverlay/>
+        <ModalOverlay />
         <ModalContent>
           <ModalHeader>Proposta gerada!</ModalHeader>
           <ModalBody>A proposta foi gerada com sucesso e já está disponível para visualização.</ModalBody>
-          <ModalFooter><ButtonGroup gap={'16px'}>
+          <ModalFooter>
+            <ButtonGroup gap={'16px'}>
               <Button
                 variant={'ghost'}
                 onClick={() => router.push("/")}
@@ -525,7 +525,8 @@ function Form() {
               >
                 Visualizar
               </Button>
-            </ButtonGroup></ModalFooter>
+            </ButtonGroup>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </main>

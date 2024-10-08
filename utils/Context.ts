@@ -1,5 +1,9 @@
-import { createContext } from 'react';
+import { createContext, Dispatch, SetStateAction } from 'react';
+import { Proposta as Prop } from '@/interfaces/Proposta';
 
-const PDFAtivo = createContext([]);
+// Contexto que mantém tanto o estado quanto o setter
+type PDFAtivoContextType = [Prop | undefined, Dispatch<SetStateAction<Prop | undefined>>];
+
+const PDFAtivo = createContext<PDFAtivoContextType | undefined>(undefined);
 
 export default PDFAtivo;

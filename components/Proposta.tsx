@@ -41,11 +41,17 @@ function Proposta(prop: IProposta) {
     setNumPages(numPages);
   }
 
-  const [pdfAtivo, setPdfAtivo] = useContext(PDFAtivo)
+  const pdfAtivoContext = useContext(PDFAtivo);
+
+  if (!pdfAtivoContext) {
+    throw new Error("useContext(PDFAtivo) must be used within a PDFAtivoProvider");
+  }
+
+  const [, setPdfAtivo] = pdfAtivoContext;
 
   return (
     <div className='h-fit w-fit p-4 rounded-md bg-[#efefef] shadow-lg flex flex-col items-center justify-center gap-6'>
-      <Document onClick={() => { (setPdfAtivo as React.Dispatch<SetStateAction<IProposta>>)(prop); prop.onOpen() }} className={"cursor-pointer transition-all hover:opacity-60"} file="https://elosolutions.com.br/propostas/ELOSCH%200005R24%20Rev1.pdf" onLoadSuccess={onDocumentLoadSuccess}>
+      <Document onClick={() => { (setPdfAtivo as React.Dispatch<SetStateAction<IProposta>>)(prop); prop.onOpen() }} className={"cursor-pointer transition-all hover:opacity-60"} file={prop.link_pdf} onLoadSuccess={onDocumentLoadSuccess}>
         <Page className={"cursor-pointer"} pageNumber={1} height={200} width={150} />
       </Document>
       <div className='flex items-center justify-center flex-col gap-1'>

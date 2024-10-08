@@ -305,7 +305,7 @@ function VisualizarPropostas() {
             </ModalBody>
             <ModalFooter>
               <ButtonGroup gap={"16px"}>
-                <Button variant="ghost">Fechar</Button>
+                <Button variant="ghost" onClick={onVerClose}>Fechar</Button>
                 <Button colorScheme='green'>Editar</Button>
                 <Button colorScheme='green' onClick={downloadPdf}>Baixar</Button>
               </ButtonGroup>
