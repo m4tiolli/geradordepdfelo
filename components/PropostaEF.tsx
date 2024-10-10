@@ -1,9 +1,9 @@
 'use client'
 import { Proposta as Prop } from '@/interfaces/Proposta';
-import PDFAtivo from '@/utils/Context';
+import PDFAtivo from '@/utils/ContextEF';
 import { Button } from '@chakra-ui/react';
 import axios from 'axios';
-import React, { SetStateAction, useContext, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { pdfjs, Document, Page } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
@@ -11,13 +11,14 @@ import ActivityIndicator from './ActivityIndicator';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@4.4.168/legacy/build/pdf.worker.min.mjs`;
 
-interface IProposta extends Prop {
-  onOpen: () => void
+interface IPropostaEF extends Prop {
+  onOpen: () => void;
+  onLoadSuccess: () => void;
+  link_pdf: string;
 }
 
-function Proposta(prop: IProposta) {
-
-  const [isLoading, setIsLoading] = useState(false)
+function Proposta({ onLoadSuccess, ...prop }: IPropostaEF) {
+  const [isLoading, setIsLoading] = useState(false);
 
   const link = prop.link_pdf;
   const downloadPdf = async () => {
@@ -30,15 +31,14 @@ function Proposta(prop: IProposta) {
     a.click();
     window.URL.revokeObjectURL(url);
     a.remove();
-    setIsLoading(false)
+    setIsLoading(false);
   };
 
-  const [numPages, setNumPages] = useState<number>();
-
-  console.log(numPages);
+  const [, setNumPages] = useState<number>();
 
   function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
     setNumPages(numPages);
+    onLoadSuccess(); // Notifica que o PDF foi carregado
   }
 
   const pdfAtivoContext = useContext(PDFAtivo);
@@ -47,11 +47,11 @@ function Proposta(prop: IProposta) {
     throw new Error("useContext(PDFAtivo) must be used within a PDFAtivoProvider");
   }
 
-  const [, setPdfAtivo] = pdfAtivoContext;
+  const [, setPdfAtivo] = pdfAtivoContext; // Desestruturação correta do contexto
 
   return (
     <div className='h-fit w-fit p-4 rounded-md bg-[#efefef] shadow-lg flex flex-col items-center justify-center gap-6'>
-      <Document onClick={() => { (setPdfAtivo as React.Dispatch<SetStateAction<IProposta>>)(prop); prop.onOpen() }} className={"cursor-pointer transition-all hover:opacity-60"} file={prop.link_pdf} onLoadSuccess={onDocumentLoadSuccess}>
+      <Document onClick={() => { setPdfAtivo(prop); prop.onOpen(); }} className={"cursor-pointer transition-all hover:opacity-60"} file={prop.link_pdf} onLoadSuccess={onDocumentLoadSuccess}>
         <Page className={"cursor-pointer"} pageNumber={1} height={200} width={150} />
       </Document>
       <div className='flex items-center justify-center flex-col gap-1'>
@@ -59,7 +59,7 @@ function Proposta(prop: IProposta) {
         <h3 className='font-normal text-lg'>{prop.nomeEmpresa}</h3>
       </div>
       <div className='flex gap-4 items-center justify-center'>
-        <Button variant={"outline"} onClick={() => { (setPdfAtivo as React.Dispatch<SetStateAction<IProposta>>)(prop); prop.onOpen() }} colorScheme='green'>Ver</Button>
+        <Button variant={"outline"} onClick={() => { setPdfAtivo(prop); prop.onOpen(); }} colorScheme='green'>Ver</Button>
         <Button colorScheme='green' onClick={downloadPdf}>{isLoading ? <ActivityIndicator /> : "Baixar"}</Button>
       </div>
     </div>

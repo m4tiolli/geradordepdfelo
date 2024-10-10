@@ -5,7 +5,7 @@ export async function GET(req: Request) {
   try {
     const query = `
     SELECT 
-      pSCHH.proposta,
+      pSCHH.proposta as codigoProposta,
       pSCHH.cnpjEmpresa,
       pSCHH.razaoEmpresa,
       pSCHH.nomeEmpresa,

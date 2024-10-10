@@ -1,247 +1,187 @@
 'use client';
-import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
-  Button,
-  ButtonGroup,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  RangeSlider,
-  RangeSliderFilledTrack,
-  RangeSliderMark,
-  RangeSliderThumb,
-  RangeSliderTrack,
-  Select,
-  useDisclosure,
-} from '@chakra-ui/react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
-import React, { useState, useEffect } from 'react';
-import { FaSearch } from 'react-icons/fa';
-import { IoFilter } from 'react-icons/io5';
-import { Proposta as Prop } from '@/interfaces/Proposta';
-import Proposta from '@/components/Proposta';
+import { useDisclosure, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, ButtonGroup, Input } from '@chakra-ui/react';
+import Proposta from '@/components/PropostaSC';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import { pdfjs, Document, Page } from 'react-pdf';
-import 'react-pdf/dist/Page/AnnotationLayer.css';
-import 'react-pdf/dist/Page/TextLayer.css';
-import PDFAtivo from '@/utils/Context';
+import PDFAtivo from '@/utils/ContextSC';
+import FiltroPropostasModal, { FiltroPropostas } from './ModalFiltrosSC';
+import { ValuesSC } from '@/interfaces/SC';
+import { FaSearch } from 'react-icons/fa';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@4.4.168/legacy/build/pdf.worker.min.mjs`;
 
+interface IPropostas extends ValuesSC {
+  link_pdf: string;
+}
+
 function VisualizarPropostas() {
-  const [propostas, setPropostas] = useState<Prop[]>([]);
+  const [propostas, setPropostas] = useState<IPropostas[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-  // Carregar as propostas e calcular o maior valor
-  useEffect(() => {
-    axios
-      .get('/api/sc/buscar-proposta')
-      .then((response) => {
-        setPropostas(response.data);
-      })
-      .finally(() => setIsLoading(false));
-  }, []);
-
-  const { isOpen: isVerOpen, onOpen: onVerOpen, onClose: onVerClose } = useDisclosure()
+  const [visiblePropostas, setVisiblePropostas] = useState<IPropostas[]>([]);
+  const [codigoPropostaFiltro, setCodigoPropostaFiltro] = useState('');
+  const observerRef = useRef<HTMLDivElement | null>(null);
+  const { isOpen: isVerOpen, onOpen: onVerOpen, onClose: onVerClose } = useDisclosure();
+  const [pdfAtivo, setPdfAtivo] = useState<IPropostas>();
   const [numPages, setNumPages] = useState<number>();
+
+  // Estado para armazenar os filtros
+  const [filtros,] = useState<FiltroPropostas>({
+    nomeEmpresa: "",
+    nomeVendedor: "",
+    tipoContato: "",
+    dataProposta: "",
+    codigoProposta: "",
+  });
 
   function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
     setNumPages(numPages);
   }
 
-  const [pdfAtivo, setPdfAtivo] = useState<Prop>()
+  useEffect(() => {
+    // Carregar propostas da API
+    axios.get('/api/sc/buscar-proposta').then((response) => {
+      const propostas = response.data;
+      setPropostas(propostas);
+      setVisiblePropostas(propostas.slice(0, 10)); // Carrega os primeiros 10 propostas
+      setIsLoading(false);
+    });
+  }, []);
 
+  // Função para aplicar os filtros
+  const aplicarFiltros = (filtros: FiltroPropostas) => {
+    const propostasFiltradas = propostas.filter((proposta: IPropostas) => {
+      return (
+        (filtros.nomeEmpresa === "" || proposta.nomeEmpresa?.toLowerCase().includes(filtros.nomeEmpresa.toLowerCase())) &&
+        (filtros.nomeVendedor === "" || proposta.nomeVendedor?.toLowerCase().includes(filtros.nomeVendedor.toLowerCase())) &&
+        (filtros.tipoContato === "" || proposta.tipoContato.toLowerCase() === filtros.tipoContato.toLowerCase()) &&
+        (filtros.dataProposta === "" || proposta.dataProposta === filtros.dataProposta) &&
+        (filtros.codigoProposta === "" || proposta.codigoProposta?.toLowerCase().includes(filtros.codigoProposta.toLowerCase()))
+      );
+    });
+    setVisiblePropostas(propostasFiltradas.slice(0, 10)); // Atualiza a lista visível com os primeiros 10 filtrados
+    onClose()
+  };
+
+  // Atualiza o estado do filtro de código da proposta
+  const handleCodigoPropostaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setCodigoPropostaFiltro(value);
+
+    // Atualiza os filtros e aplica a filtragem
+    const updatedFiltros = { ...filtros, codigoProposta: value };
+    aplicarFiltros(updatedFiltros);
+  };
+
+  // Função para baixar o PDF
   const downloadPdf = async () => {
     setIsLoading(true);
     const res = await axios.get(pdfAtivo?.link_pdf as string, { responseType: 'blob' });
     const url = window.URL.createObjectURL(res.data);
     const a = document.createElement('a');
     a.href = url;
-    a.download = pdfAtivo?.proposta as string;
+    a.download = pdfAtivo?.codigoProposta as string;
     a.click();
     window.URL.revokeObjectURL(url);
     a.remove();
     setIsLoading(false)
   };
 
+  const { isOpen, onOpen, onClose } = useDisclosure()
+
+  const loadMorePropostas = useCallback(() => {
+    setVisiblePropostas((prev) => [
+      ...prev,
+      ...propostas.slice(prev.length, prev.length + 10),
+    ]);
+  }, [propostas]);
+
+  // Configurar o Intersection Observer
+  useEffect(() => {
+    if (isLoading || propostas.length <= visiblePropostas.length) return; // Não observar se já carregou tudo
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMorePropostas();
+        }
+      },
+      { threshold: 1.0 }
+    );
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+    return () => {
+      if (observerRef.current) observer.unobserve(observerRef.current);
+    };
+  }, [isLoading, visiblePropostas.length, loadMorePropostas]);
+
+  const divFull = useRef<HTMLDivElement>(null)
+
+  function pegarLarguraRelativa() {
+    const larguraTotal = divFull.current?.offsetWidth
+    if (larguraTotal) {
+      const sixty = larguraTotal * 0.6
+      return sixty
+    }
+  }
+
+  console.log(pegarLarguraRelativa())
+
   return (
     <PDFAtivo.Provider value={[pdfAtivo, setPdfAtivo] as never}>
-      <div className="flex flex-col w-screen mt-[15dvh] pb-[20dvh] gap-4 items-center justify-center relative z-20">
-        <div className='top-0 left-0 fixed w-screen h-[10dvh] backdrop-blur-sm shadow-md flex items-center justify-center z-50'>
-          <div className="flex items-center justify-between w-1/3 bg-azul p-2 rounded-md">
-            <input
-              placeholder="Pesquisar por proposta"
-              className="bg-transparent text-white placeholder:text-[#ffffffa6] outline-none"
-              type="search"
-              name="codigoProposta"
-              value={""}
-              // onChange={handleFiltroChange}
-              id="codigoProposta"
+      {isLoading && (
+        <div className='flex flex-col items-center justify-center fixed top-0 left-0 z-[999] w-screen h-dvh bg-white'>
+          <ActivityIndicator color='azul' />
+          <h3>Carregando...</h3>
+        </div>
+      )}
+      <div ref={divFull} className="flex flex-col w-screen mt-[18dvh] pb-[10dvh] gap-4 items-center justify-center relative z-20">
+        {/* Campo de Filtro para Código da Proposta */}
+        <div className='bg-white p-4 rounded-md flex flex-col items-center justify-center gap-4 fixed top-4 z-[999] shadow-lg'>
+          <div className='flex items-center justify-center gap-4'>
+            <Input
+              type="text"
+              placeholder="Filtrar pelo Código da Proposta"
+              value={codigoPropostaFiltro}
+              onChange={handleCodigoPropostaChange}
+              focusBorderColor='#38457a'
+              variant={'filled'}
+              className='w-1/3'
             />
-            <div className="flex items-center justify-center gap-3">
-              <button
-                className="text-white rounded-md border border-[#ffffffa6] hover:bg-[#ffffff42] transition-all cursor-pointer p-2"
-                onClick={onOpen}
-              >
-                <IoFilter />
-              </button>
-              <button className="text-white rounded-md border border-[#ffffffa6] hover:bg-[#ffffff42] transition-all cursor-pointer p-2">
-                <FaSearch />
-              </button>
-            </div>
+            <Button>
+              <FaSearch />
+            </Button>
+            <Button onClick={onOpen}>
+              Filtros
+            </Button>
           </div>
-        </div>
-        {/*<Modal isOpen={isOpen} onClose={onClose}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Filtrar propostas</ModalHeader>
-            <ModalBody>
-              <ModalCloseButton />
-              <Accordion allowToggle>
-                <AccordionItem>
-                  <h2>
-                    <AccordionButton>
-                      <Box as="span" flex="1" textAlign="left">
-                        Valor da Proposta
-                      </Box>
-                      <AccordionIcon />
-                    </AccordionButton>
-                  </h2>
-                  <AccordionPanel pb={4}>
-                    <RangeSlider
-                      min={100}
-                      max={maiorValor} // Usa o maior valor calculado
-                      onChange={(val) =>
-                        setFiltros((prev) => ({ ...prev, valor: val }))
-                      }
-                      value={filtros.valor}
-                      step={100}
-                    >
-                      <RangeSliderMark value={100}>R$ 100</RangeSliderMark>
-                      <RangeSliderMark value={maiorValor - 1000}>
-                        R$ {maiorValor.toLocaleString('pt-BR')}
-                      </RangeSliderMark>
-                      <RangeSliderTrack>
-                        <RangeSliderFilledTrack />
-                      </RangeSliderTrack>
-                      <RangeSliderThumb index={0} />
-                      <RangeSliderThumb index={1} />
-                    </RangeSlider>
-                  </AccordionPanel>
-                </AccordionItem>
-
-                
-                <AccordionItem>
-                  <h2>
-                    <AccordionButton>
-                      <Box as="span" flex="1" textAlign="left">
-                        Nome da Empresa
-                      </Box>
-                      <AccordionIcon />
-                    </AccordionButton>
-                  </h2>
-                  <AccordionPanel pb={4}>
-                    <input
-                      type="text"
-                      name="nomeEmpresa"
-                      placeholder="Nome da Empresa"
-                      value={filtros.nomeEmpresa}
-                      onChange={handleFiltroChange}
-                    />
-                  </AccordionPanel>
-                </AccordionItem>
-
-               
-                <AccordionItem>
-                  <h2>
-                    <AccordionButton>
-                      <Box as="span" flex="1" textAlign="left">
-                        Ano da Proposta
-                      </Box>
-                      <AccordionIcon />
-                    </AccordionButton>
-                  </h2>
-                  <AccordionPanel pb={4}>
-                    <input
-                      type="text"
-                      name="ano"
-                      placeholder="Ano"
-                      value={filtros.ano}
-                      onChange={handleFiltroChange}
-                    />
-                  </AccordionPanel>
-                </AccordionItem>
-
-                
-                <AccordionItem>
-                  <h2>
-                    <AccordionButton>
-                      <Box as="span" flex="1" textAlign="left">
-                        Cadastro Elo
-                      </Box>
-                      <AccordionIcon />
-                    </AccordionButton>
-                  </h2>
-                  <AccordionPanel pb={4}>
-                    <Select
-                      name="elo"
-                      placeholder="Selecione o cadastro da Elo"
-                      value={filtros.elo}
-                      onChange={(e) =>
-                        setFiltros({ ...filtros, elo: e.target.value })
-                      }
-                    >
-                      <option value="S">Serviços</option>
-                      <option value="R">Recuperadora</option>
-                    </Select>
-                  </AccordionPanel>
-                </AccordionItem>
-              </Accordion>
-            </ModalBody>
-            <ModalFooter>
-              <Button variant="ghost" mr={3} onClick={onClose}>
-                Fechar
-              </Button>
-              <Button colorScheme="green" onClick={onClose}>
-                Aplicar
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>*/}
-        <p className="text-xl font-medium -my-2 text-azul">
-          {/* {!isLoading
-            ? propostasFiltradas
-              ? propostasFiltradas.length > 1
-                ? propostasFiltradas.length + ' propostas'
-                : propostasFiltradas.length + ' proposta'
-              : 'Sem propostas cadastradas'
-            : ''} */}
-        </p>
-        <div className="grid grid-cols-4 gap-8 items-center justify-center place-items-center">
-          {isLoading ? (
-            <div className='flex flex-col items-center justify-center absolute'>
-              <ActivityIndicator />
-              <h3>Carregando...</h3>
-            </div>
-          ) : (
-            propostas?.map((proposta, index) => (
-              <Proposta key={index++} {...proposta} onOpen={onVerOpen} />
-            ))
-          )}
+          <p>Mostrando {visiblePropostas.length} resultados de {propostas.length} propostas</p>
         </div>
 
-        <Modal isOpen={isVerOpen} onClose={onVerClose} size={"6xl"} isCentered>
+        {/* Botão de Filtro */}
+        <FiltroPropostasModal isOpen={isOpen} onClose={onClose} onAplicarFiltros={aplicarFiltros} />
+
+        {/* Lista de Propostas */}
+        <div className="grid grid-cols-5 gap-8 items-center justify-center place-items-center">
+          {
+            visiblePropostas ? visiblePropostas.map((proposta, index) => {
+              return (
+                <Proposta key={index} {...proposta} onOpen={onVerOpen} onLoadSuccess={() => { }} />
+              );
+            }) : (
+              <div className='flex flex-col items-center justify-center'>
+                <h3>Sem resultados.</h3>
+              </div>
+            )
+          }
+        </div>
+
+        {/* Elemento Observado para Carregar Mais */}
+        <div ref={observerRef} className="h-10" />
+
+        {/* Modal de Visualização */}
+        <Modal isOpen={isVerOpen} onClose={onVerClose} size={"4xl"} isCentered>
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>
@@ -249,26 +189,19 @@ function VisualizarPropostas() {
               Visualizar dados da proposta
             </ModalHeader>
             <ModalBody>
-              <div className='flex items-stretch justify-between'>
-                <div className='overflow-y-auto w-[50vw] h-[65dvh]'>
-                  <Document file={pdfAtivo?.link_pdf} onLoadSuccess={onDocumentLoadSuccess}>
-                    {Array.from({ length: numPages as number }, (_, index) => (
-                      <Page key={index} pageNumber={index + 1} width={650} />
-                    ))}
-                  </Document>
-                </div>
-                <div className='w-[30vw] flex flex-col items-center justify-start'>
-                  <h1>{pdfAtivo?.proposta}</h1>
-                  <h3>{pdfAtivo?.nomeEmpresa}</h3>
-                  <p>{pdfAtivo?.data}</p>
-                </div>
+              <div className='overflow-y-auto w-full h-[65dvh]'>
+                <Document file={pdfAtivo?.link_pdf} onLoadSuccess={onDocumentLoadSuccess}>
+                  {Array.from({ length: numPages as number }, (_, index) => (
+                    <Page key={index} pageNumber={index + 1} width={pegarLarguraRelativa()} />
+                  ))}
+                </Document>
               </div>
             </ModalBody>
             <ModalFooter>
               <ButtonGroup gap={"16px"}>
                 <Button variant="ghost" onClick={onVerClose}>Fechar</Button>
-                <Button colorScheme='green'>Editar</Button>
                 <Button colorScheme='green' onClick={downloadPdf}>Baixar</Button>
+                <Button colorScheme='green' onClick={downloadPdf}>Editar</Button>
               </ButtonGroup>
             </ModalFooter>
           </ModalContent>

@@ -24,5 +24,5 @@ export interface ValuesSC {
   valorDiaria: string;
   condicaoPagamento: string;
   dataAtendimento: string;
-  escopo: string
+  escopo: string;
 }

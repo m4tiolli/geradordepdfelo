@@ -28,12 +28,12 @@ import React, { useState, useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { IoFilter } from 'react-icons/io5';
 import { Proposta as Prop } from '@/interfaces/Proposta';
-import Proposta from '@/components/Proposta';
+import Proposta from '@/components/PropostaEF';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import { pdfjs, Document, Page } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
-import PDFAtivo from '@/utils/Context';
+import PDFAtivo from '@/utils/ContextEF';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@4.4.168/legacy/build/pdf.worker.min.mjs`;
 
@@ -113,7 +113,7 @@ function VisualizarPropostas() {
     a.remove();
     setIsLoading(false)
   };
-
+  
   return (
     <PDFAtivo.Provider value={[pdfAtivo, setPdfAtivo] as never}>
       <div className="flex flex-col w-screen mt-[15dvh] pb-[20dvh] gap-4 items-center justify-center relative z-20">
@@ -275,7 +275,7 @@ function VisualizarPropostas() {
             </div>
           ) : (
             propostasFiltradas?.map((proposta, index) => (
-              <Proposta key={index++} {...proposta} onOpen={onVerOpen} />
+              <Proposta onLoadSuccess={() => { }}  key={index++} {...proposta} onOpen={onVerOpen} />
             ))
           )}
         </div>
