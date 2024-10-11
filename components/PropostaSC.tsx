@@ -15,6 +15,7 @@ interface IPropostaSC extends ValuesSC {
   onOpen: () => void;
   onLoadSuccess: () => void;
   link_pdf: string;
+  revisao: number
 }
 
 function Proposta({ onLoadSuccess, ...prop }: Readonly<IPropostaSC>) {
