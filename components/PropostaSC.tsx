@@ -17,7 +17,7 @@ interface IPropostaSC extends ValuesSC {
   link_pdf: string;
 }
 
-function Proposta({ onLoadSuccess, ...prop }: IPropostaSC) {
+function Proposta({ onLoadSuccess, ...prop }: Readonly<IPropostaSC>) {
   const [isLoading, setIsLoading] = useState(false);
 
   const link = prop.link_pdf;
@@ -34,7 +34,7 @@ function Proposta({ onLoadSuccess, ...prop }: IPropostaSC) {
     setIsLoading(false);
   };
 
-  const [, setNumPages] = useState<number>();
+  const [,setNumPages] = useState<number>(0);
 
   function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
     setNumPages(numPages);

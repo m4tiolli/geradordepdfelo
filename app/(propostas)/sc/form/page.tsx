@@ -1,7 +1,6 @@
 'use client';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, ChangeEvent, useState } from 'react';
 import Input from '@/components/Input';
-import { ValuesSC } from '@/interfaces/SC';
 import {
   inputsDadosEmpresa,
   inputsDadosProposta,
@@ -9,7 +8,6 @@ import {
   inputsDadosVendedor,
   inputsValoresProposta,
 } from '@/mocks/InputsSC';
-import { ChangeEvent, useState } from 'react';
 import { Stepper, Step } from '@material-tailwind/react';
 import { CgArrowsExchange } from 'react-icons/cg';
 import {
@@ -38,6 +36,7 @@ import { useRouter } from 'next/navigation';
 import { IoMdHelpCircleOutline } from 'react-icons/io';
 import axios from 'axios';
 import { getToken, isTokenValid } from '@/utils/Auth';
+import { IPropostas } from '@/components/VisualizarPropostaSC';
 
 function Form() {
   const router = useRouter();
@@ -63,7 +62,7 @@ function Form() {
     onClose: onEloClose,
   } = useDisclosure();
   const { isOpen: isSucessoOpen, onOpen: onSucessoOpen, onClose: onSucessoClose } = useDisclosure()
-  const [values, setValues] = useState<ValuesSC>({
+  const [values, setValues] = useState<IPropostas>({
     cnpjEmpresa: '',
     razaoEmpresa: '',
     nomeEmpresa: '',
@@ -87,6 +86,8 @@ function Form() {
     valorTecnico: '',
     valorKM: '',
     valorDiaria: '',
+    revisao: 1,
+    link_pdf: "",
     condicaoPagamento:
       '100% (cem por cento) a 7 DDL a partir da conclusão dos serviços, mediante aprovação de cadastro',
     dataAtendimento:

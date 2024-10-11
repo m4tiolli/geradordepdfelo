@@ -1,7 +1,6 @@
-import { ValuesSC } from "@/interfaces/SC";
+import { IPropostas } from "@/components/VisualizarPropostaSC";
 import axios from "axios";
-import React, { SetStateAction } from "react";
-import { ChangeEvent } from "react";
+import React, { SetStateAction, ChangeEvent } from "react";
 
 interface Inputs {
   name: string;
@@ -14,9 +13,9 @@ interface Inputs {
 }
 
 interface IDados {
-  values: ValuesSC;
+  values: IPropostas;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  setValues: React.Dispatch<SetStateAction<ValuesSC>>
+  setValues: React.Dispatch<SetStateAction<IPropostas>>
 }
 
 // 1. Dados da Empresa
@@ -182,7 +181,7 @@ export const inputsDadosVendedor = ({ values, onChange }: IDados): Inputs[] => [
   },
 ];
 
-const fetchDadosEmpresa = async ({ values, setValues }: { values: ValuesSC, setValues: React.Dispatch<SetStateAction<ValuesSC>> }) => {
+const fetchDadosEmpresa = async ({ values, setValues }: { values: IPropostas, setValues: React.Dispatch<SetStateAction<IPropostas>> }) => {
   await axios.get("https://api.cnpja.com/office/" + values.cnpjEmpresa, {
     headers: {
       Authorization:

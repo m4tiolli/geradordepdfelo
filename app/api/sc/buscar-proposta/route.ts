@@ -1,7 +1,7 @@
 import { promiseConnection } from "@/utils/Connections";
 import { NextResponse } from "next/server";
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
     const query = `
     SELECT 
@@ -21,9 +21,13 @@ export async function GET(req: Request) {
       pSCHH.validadeProposta,
       pSCHH.valorTecnico,
       pSCHH.condicaoPagamento,
+      pSCHH.escopo,
+      pSCHH.revisao,
+      pSCHH.dataAtendimento,
       pSCHH.elo,
       pSCHH.link_pdf,
       pSCHH.ano,
+      pSCHH.id_vendedor,
       u.nome AS nomeVendedor,
       u.departamento AS departamentoVendedor,
       u.email AS emailVendedor,
@@ -33,13 +37,12 @@ export async function GET(req: Request) {
       vSC.valorDiaria
     FROM propostasSCHH AS pSCHH
     INNER JOIN usuario AS u ON pSCHH.id_vendedor = u.id
-    LEFT JOIN valoresSC AS vSC ON pSCHH.elo = 'S';
-    `;
+    LEFT JOIN valoresSC AS vSC ON pSCHH.elo = 'S' WHERE pSCHH.revisao = (SELECT MAX(sub.revisao) FROM propostasSCHH sub WHERE sub.proposta = pSCHH.proposta)`;
 
     const [rows] = await promiseConnection.query(query);
     return NextResponse.json(rows);
   } catch (erro) {
-    return NextResponse.json({ error: 'Erro ao buscar propostas' }, { status: 500 });
+    return NextResponse.json({ error: 'Erro ao buscar propostas: ' + erro }, { status: 500 });
   }
 }
 

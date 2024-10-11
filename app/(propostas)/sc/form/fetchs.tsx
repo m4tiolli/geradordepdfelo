@@ -1,10 +1,10 @@
-import { ValuesSC } from '@/interfaces/SC';
+import { IPropostas } from '@/components/VisualizarPropostaSC';
 import { getToken } from '@/utils/Auth';
 import axios from 'axios';
 import React from 'react';
 
 export const fetchValores = async (
-  setValues: React.Dispatch<React.SetStateAction<ValuesSC>>,
+  setValues: React.Dispatch<React.SetStateAction<IPropostas>>,
 ) => {
   await axios
     .get('/api/sc/valores')
@@ -42,7 +42,7 @@ export const fetchPropostas = async (
 };
 
 export const fetchUsuario = async (
-  setValues: React.Dispatch<React.SetStateAction<ValuesSC>>,
+  setValues: React.Dispatch<React.SetStateAction<IPropostas>>,
 ) => {
   const token = await getToken();
   await axios

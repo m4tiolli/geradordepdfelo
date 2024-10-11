@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useContext } from 'react';
 import axios from 'axios';
 import { useDisclosure, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, ButtonGroup, Input } from '@chakra-ui/react';
 import Proposta from '@/components/PropostaSC';
@@ -9,21 +9,24 @@ import PDFAtivo from '@/utils/ContextSC';
 import FiltroPropostasModal, { FiltroPropostas } from './ModalFiltrosSC';
 import { ValuesSC } from '@/interfaces/SC';
 import { FaSearch } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@4.4.168/legacy/build/pdf.worker.min.mjs`;
 
-interface IPropostas extends ValuesSC {
+export interface IPropostas extends ValuesSC {
+  revisao: number;
   link_pdf: string;
 }
 
 function VisualizarPropostas() {
+  const router = useRouter()
   const [propostas, setPropostas] = useState<IPropostas[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [visiblePropostas, setVisiblePropostas] = useState<IPropostas[]>([]);
   const [codigoPropostaFiltro, setCodigoPropostaFiltro] = useState('');
   const observerRef = useRef<HTMLDivElement | null>(null);
   const { isOpen: isVerOpen, onOpen: onVerOpen, onClose: onVerClose } = useDisclosure();
-  const [pdfAtivo, setPdfAtivo] = useState<IPropostas>();
+  
   const [numPages, setNumPages] = useState<number>();
 
   // Estado para armazenar os filtros
@@ -126,88 +129,91 @@ function VisualizarPropostas() {
     }
   }
 
-  console.log(pegarLarguraRelativa())
+  const pdfAtivoContext = useContext(PDFAtivo);
+  if (!pdfAtivoContext) {
+    return <div>Proposta não encontrada.</div>; // Verificação para garantir que o contexto foi carregado
+  }
+  const [pdfAtivo] = pdfAtivoContext;
 
-  return (
-    <PDFAtivo.Provider value={[pdfAtivo, setPdfAtivo] as never}>
-      {isLoading && (
-        <div className='flex flex-col items-center justify-center fixed top-0 left-0 z-[999] w-screen h-dvh bg-white'>
-          <ActivityIndicator color='azul' />
-          <h3>Carregando...</h3>
-        </div>
-      )}
-      <div ref={divFull} className="flex flex-col w-screen mt-[18dvh] pb-[10dvh] gap-4 items-center justify-center relative z-20">
-        {/* Campo de Filtro para Código da Proposta */}
-        <div className='bg-white p-4 rounded-md flex flex-col items-center justify-center gap-4 fixed top-4 z-[999] shadow-lg'>
-          <div className='flex items-center justify-center gap-4'>
-            <Input
-              type="text"
-              placeholder="Filtrar pelo Código da Proposta"
-              value={codigoPropostaFiltro}
-              onChange={handleCodigoPropostaChange}
-              focusBorderColor='#38457a'
-              variant={'filled'}
-              className='w-1/3'
-            />
-            <Button>
-              <FaSearch />
-            </Button>
-            <Button onClick={onOpen}>
-              Filtros
-            </Button>
-          </div>
-          <p>Mostrando {visiblePropostas.length} resultados de {propostas.length} propostas</p>
-        </div>
-
-        {/* Botão de Filtro */}
-        <FiltroPropostasModal isOpen={isOpen} onClose={onClose} onAplicarFiltros={aplicarFiltros} />
-
-        {/* Lista de Propostas */}
-        <div className="grid grid-cols-5 gap-8 items-center justify-center place-items-center">
-          {
-            visiblePropostas ? visiblePropostas.map((proposta, index) => {
-              return (
-                <Proposta key={index} {...proposta} onOpen={onVerOpen} onLoadSuccess={() => { }} />
-              );
-            }) : (
-              <div className='flex flex-col items-center justify-center'>
-                <h3>Sem resultados.</h3>
-              </div>
-            )
-          }
-        </div>
-
-        {/* Elemento Observado para Carregar Mais */}
-        <div ref={observerRef} className="h-10" />
-
-        {/* Modal de Visualização */}
-        <Modal isOpen={isVerOpen} onClose={onVerClose} size={"4xl"} isCentered>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>
-              <ModalCloseButton />
-              Visualizar dados da proposta
-            </ModalHeader>
-            <ModalBody>
-              <div className='overflow-y-auto w-full h-[65dvh]'>
-                <Document file={pdfAtivo?.link_pdf} onLoadSuccess={onDocumentLoadSuccess}>
-                  {Array.from({ length: numPages as number }, (_, index) => (
-                    <Page key={index} pageNumber={index + 1} width={pegarLarguraRelativa()} />
-                  ))}
-                </Document>
-              </div>
-            </ModalBody>
-            <ModalFooter>
-              <ButtonGroup gap={"16px"}>
-                <Button variant="ghost" onClick={onVerClose}>Fechar</Button>
-                <Button colorScheme='green' onClick={downloadPdf}>Baixar</Button>
-                <Button colorScheme='green' onClick={downloadPdf}>Editar</Button>
-              </ButtonGroup>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
+  return (<>
+    {isLoading && (
+      <div className='flex flex-col items-center justify-center fixed top-0 left-0 z-[999] w-screen h-dvh bg-white'>
+        <ActivityIndicator color='azul' />
+        <h3>Carregando...</h3>
       </div>
-    </PDFAtivo.Provider>
+    )}
+    <div ref={divFull} className="flex flex-col w-screen mt-[18dvh] pb-[10dvh] gap-4 items-center justify-center relative z-20">
+      {/* Campo de Filtro para Código da Proposta */}
+      <div className='bg-white p-4 rounded-md flex flex-col items-center justify-center gap-4 fixed top-4 z-[999] shadow-lg'>
+        <div className='flex items-center justify-center gap-4'>
+          <Input
+            type="text"
+            placeholder="Filtrar pelo Código da Proposta"
+            value={codigoPropostaFiltro}
+            onChange={handleCodigoPropostaChange}
+            focusBorderColor='#38457a'
+            variant={'filled'}
+            className='w-1/3'
+          />
+          <Button>
+            <FaSearch />
+          </Button>
+          <Button onClick={onOpen}>
+            Filtros
+          </Button>
+        </div>
+        <p>Mostrando {visiblePropostas.length} resultados de {propostas.length} propostas</p>
+      </div>
+
+      {/* Botão de Filtro */}
+      <FiltroPropostasModal isOpen={isOpen} onClose={onClose} onAplicarFiltros={aplicarFiltros} />
+
+      {/* Lista de Propostas */}
+      <div className="grid grid-cols-5 gap-8 items-center justify-center place-items-center">
+        {
+          visiblePropostas ? visiblePropostas.map((proposta, index) => {
+            return (
+              <Proposta key={index++} {...proposta} onOpen={onVerOpen} onLoadSuccess={() => { }} />
+            );
+          }) : (
+            <div className='flex flex-col items-center justify-center'>
+              <h3>Sem resultados.</h3>
+            </div>
+          )
+        }
+      </div>
+
+      {/* Elemento Observado para Carregar Mais */}
+      <div ref={observerRef} className="h-10" />
+
+      {/* Modal de Visualização */}
+      <Modal isOpen={isVerOpen} onClose={onVerClose} size={"4xl"} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            <ModalCloseButton />
+            Visualizar dados da proposta
+          </ModalHeader>
+          <ModalBody>
+            <div className='overflow-y-auto w-full h-[65dvh]'>
+              <Document file={pdfAtivo?.link_pdf} onLoadSuccess={onDocumentLoadSuccess}>
+                {Array.from({ length: numPages as number }, (_, index) => (
+                  <Page key={index} pageNumber={index + 1} width={pegarLarguraRelativa()} />
+                ))}
+              </Document>
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <ButtonGroup gap={"16px"}>
+              <Button variant="ghost" onClick={onVerClose}>Fechar</Button>
+              <Button colorScheme='green' onClick={downloadPdf}>Baixar</Button>
+              <Button colorScheme='green' onClick={() => router.push("/sc/editar-proposta")}>Editar</Button>
+            </ButtonGroup>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </div>
+  </>
   );
 }
 
