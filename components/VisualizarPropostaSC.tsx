@@ -16,6 +16,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@4.4.168/legacy/bui
 export interface IPropostas extends ValuesSC {
   revisao: number;
   link_pdf: string;
+  elo: string
 }
 
 function VisualizarPropostas() {
@@ -206,6 +207,7 @@ function VisualizarPropostas() {
           <ModalFooter>
             <ButtonGroup gap={"16px"}>
               <Button variant="ghost" onClick={onVerClose}>Fechar</Button>
+              <Button colorScheme='green' onClick={() => router.push("/sc/historico")}>Revisões</Button>
               <Button colorScheme='green' onClick={downloadPdf}>Baixar</Button>
               <Button colorScheme='green' onClick={() => router.push("/sc/editar-proposta")}>Editar</Button>
             </ButtonGroup>

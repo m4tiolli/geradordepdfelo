@@ -37,25 +37,28 @@ export default function Home() {
           <button
             key={index}
             className="bg-azul text-white px-4 py-2 w-full transition-all hover:opacity-60 rounded-md font-semibold"
-            onClick={button.action}
+            onClick={() => button.action(router)}
           >
             {button.label}
           </button>
         ))}
       </div>
-      <div className='flex flex-col items-center justify-start gap-3 w-1/2'>
-        <h1 className="text-3xl font-semibold text-azul text-center">Administrativo</h1>
-        {usuario.administrador === 1 &&
-          adminButtons(router).map((button, index) => (
-            <button
-              key={index}
-              className="bg-azul text-white px-4 py-2 w-full transition-all hover:opacity-60 rounded-md font-semibold"
-              onClick={button.action}
-            >
-              {button.label}
-            </button>
-          ))}
-      </div>
+      {usuario.administrador === 1 ?
+
+        <div className='flex flex-col items-center justify-start gap-3 w-1/2'>
+          <h1 className="text-3xl font-semibold text-azul text-center">Administrativo</h1>
+          {usuario.administrador === 1 &&
+            adminButtons(router).map((button, index) => (
+              <button
+                key={index}
+                className="bg-azul text-white px-4 py-2 w-full transition-all hover:opacity-60 rounded-md font-semibold"
+                onClick={button.action}
+              >
+                {button.label}
+              </button>
+            ))}
+        </div>
+        : ""}
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />

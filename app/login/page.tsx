@@ -60,7 +60,7 @@ function Login() {
           type="submit"
           disabled={isLoading}
         >
-          {isLoading ? <ActivityIndicator /> : 'Entrar'}
+          {isLoading ? <ActivityIndicator color='azul' /> : 'Entrar'}
         </button>
       </form>
     </main>

@@ -1,5 +1,5 @@
 'use client';
-import React, { ChangeEvent, useMemo } from 'react';
+import React, { ChangeEvent } from 'react';
 import Input from '@/components/Input';
 import { Departamentos } from '@/interfaces/Formulario';
 import { Usuario } from '@/interfaces/Usuario';
@@ -29,7 +29,7 @@ function Perfil() {
   const [departamentos, setDepartamentos] = useState<Departamentos[]>([]);
   const [currentSignature, setCurrentSignature] = useState<string | null>(null); // Assinatura atual salva no banco
   const [file, setFile] = useState<File | null>(null); // Novo arquivo de assinatura selecionado
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null); // URL para pré-visualizar a nova assinatura
+  const [, setPreviewUrl] = useState<string | null>(null); // URL para pré-visualizar a nova assinatura
   const [clicked, setClicked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -176,18 +176,6 @@ function Perfil() {
       setIsLoading(false);
     }
   };
-
-  const isDataLoading = useMemo(() => {
-    return (
-      !departamentos.length ||
-      !currentSignature ||
-      Object.values(usuario).some((val) => val === '')
-    );
-  }, [departamentos.length, usuario, currentSignature]);
-
-  if (isDataLoading) {
-    return <ActivityIndicator />;
-  }
 
   return (
     <div className="flex relative items-center justify-center gap-8 w-full h-dvh">

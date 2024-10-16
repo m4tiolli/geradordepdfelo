@@ -33,11 +33,12 @@ export async function GET() {
       u.email AS emailVendedor,
       u.telefone1 AS telefone1Vendedor,
       u.telefone2 AS telefone2Vendedor,
+      u.assinatura AS assinaturaVendedor,
       vSC.valorKM,
       vSC.valorDiaria
     FROM propostasSCHH AS pSCHH
     INNER JOIN usuario AS u ON pSCHH.id_vendedor = u.id
-    LEFT JOIN valoresSC AS vSC ON pSCHH.elo = 'S' WHERE pSCHH.revisao = (SELECT MAX(sub.revisao) FROM propostasSCHH sub WHERE sub.proposta = pSCHH.proposta)`;
+    LEFT JOIN valoresSC AS vSC ON pSCHH.elo = 'S' OR pSCHH.elo = 'R' WHERE pSCHH.revisao = (SELECT MAX(sub.revisao) FROM propostasSCHH sub WHERE sub.proposta = pSCHH.proposta)`;
 
     const [rows] = await promiseConnection.query(query);
     return NextResponse.json(rows);

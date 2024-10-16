@@ -50,14 +50,12 @@ function EditarProposta() {
     valorTecnico: '',
     valorKM: '',
     valorDiaria: '',
-    condicaoPagamento:
-      '',
-    dataAtendimento:
-      '',
-    escopo:
-      '',
+    condicaoPagamento: '',
+    dataAtendimento: '',
+    escopo: '',
     link_pdf: "",
-    revisao: 1
+    revisao: 1,
+    elo: ""
   });
   const { isOpen: isSucessoOpen, onOpen: onSucessoOpen, onClose: onSucessoClose } = useDisclosure()
 
@@ -135,9 +133,36 @@ function EditarProposta() {
   const gerarPdf = async () => {
     setIsLoading(true);
     const body = {
-      ...values,
+      cnpjEmpresa: values.cnpjEmpresa,
+      razaoEmpresa: values.razaoEmpresa,
+      nomeEmpresa: values.nomeEmpresa,
+      nomeTomador: values.nomeTomador,
+      emailTomador: values.emailTomador,
+      telefone1Tomador: values.telefone1Tomador,
+      telefone2Tomador: values.telefone2Tomador,
+      departamentoTomador: values.departamentoTomador,
+      nomeVendedor: values.nomeVendedor,
+      emailVendedor: values.emailVendedor,
+      telefone1Vendedor: values.telefone1Vendedor,
+      telefone2Vendedor: values.telefone2Vendedor,
+      departamentoVendedor: values.departamentoVendedor,
+      assinaturaVendedor: values.assinaturaVendedor,
+      tipoContato: values.tipoContato,
+      entradaProposta: values.entradaProposta,
+      dataProposta: values.dataProposta,
+      codigoProposta: values.codigoProposta,
+      validadeProposta: values.validadeProposta,
+      valorTecnico: values.valorTecnico.toString(),
+      valorKM: values.valorKM.toString(),
+      valorDiaria: values.valorDiaria.toString(),
+      condicaoPagamento: values.condicaoPagamento,
+      escopo: values.escopo,
+      dataAtendimento: values.dataAtendimento,
+      elo: values.elo,
       revisao: values.revisao + 1,
+      tipoProposta: "Homem Hora"
     };
+    console.log(body, token);
 
     await axios
       .post('/api/sc/gerar-pdf', body, {
@@ -327,7 +352,7 @@ function EditarProposta() {
                           text-xl w-32 px-4 py-2 cursor-pointer transition-all hover:opacity-60 bg-azul `}
         >
           {isLoading ? (
-            <ActivityIndicator color={'azul'} />
+            <ActivityIndicator />
           ) : isLastStep ? (
             'Finalizar'
           ) : (
