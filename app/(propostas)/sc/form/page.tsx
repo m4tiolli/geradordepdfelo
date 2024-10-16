@@ -63,6 +63,7 @@ function Form() {
   } = useDisclosure();
   const { isOpen: isSucessoOpen, onOpen: onSucessoOpen, onClose: onSucessoClose } = useDisclosure()
   const [values, setValues] = useState<IPropostas>({
+    elo: elo,
     cnpjEmpresa: '',
     razaoEmpresa: '',
     nomeEmpresa: '',
