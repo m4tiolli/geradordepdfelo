@@ -111,9 +111,15 @@ export async function POST(req: NextRequest) {
       escopo
     }
 
-    const assinaturaBytes = await fetch(assinaturaVendedor).then(res => res.arrayBuffer())
+    if (assinaturaVendedor) {
 
-    const assinatura = await pdfDoc.embedPng(assinaturaBytes)
+      const assinaturaBytes = await fetch(assinaturaVendedor).then(res => res.arrayBuffer())
+
+      const assinatura = await pdfDoc.embedPng(assinaturaBytes)
+
+      form.getButton("Assinatura").setImage(assinatura)
+
+    }
 
     fields({
       body,
@@ -130,7 +136,6 @@ export async function POST(req: NextRequest) {
       field.updateAppearances(font);
     });
 
-    form.getButton("Assinatura").setImage(assinatura)
     form.flatten()
     const pdfBytesFilled = await pdfDoc.save();
     codigoProposta.replace(/ /g, "_");
