@@ -2,7 +2,7 @@ import { IPropostas } from "@/components/VisualizarPropostaSC";
 import axios from "axios";
 import React, { SetStateAction, ChangeEvent } from "react";
 
-interface Inputs {
+export interface Inputs {
   name: string;
   value: string | number | Date;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -12,7 +12,7 @@ interface Inputs {
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
 }
 
-interface IDados {
+export interface IDados {
   values: IPropostas;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   setValues: React.Dispatch<SetStateAction<IPropostas>>

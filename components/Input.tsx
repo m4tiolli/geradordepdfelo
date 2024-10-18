@@ -41,11 +41,11 @@ export default function Input({
   const semRef = useRef(null);
 
   // Classe original
-  const inputClassName = `appearance-none bg-[#ffffff0e] border min-w-fit w-full transition-all ${value ? 'border-[#ffffff]' : 'border-[#ffffff27]'
+  const inputClassName = `appearance-none bg-[#ffffff0e] border w-full transition-all ${value ? 'border-[#ffffff]' : 'border-[#ffffff27]'
     } outline-none text-sm rounded-md p-2 placeholder:text-[#ffffffa6] text-white ${invalid ? 'invalid border-red-600' : ''
     } ${disabled ? 'opacity-70 cursor-not-allowed' : ''}`
 
-  const inputAzul = `appearance-none bg-[#38457a0e] border min-w-fit w-full transition-all ${value ? 'border-[#38457a]' : 'border-[#38457a27]'
+  const inputAzul = `appearance-none bg-[#38457a0e] border w-full transition-all ${value ? 'border-[#38457a]' : 'border-[#38457a27]'
     } outline-none text-sm rounded-md p-2 placeholder:text-[#38457aa6] text-azul ${invalid ? 'invalid border-red-600' : ''
     } ${disabled ? 'opacity-70 cursor-not-allowed' : ''}`
 

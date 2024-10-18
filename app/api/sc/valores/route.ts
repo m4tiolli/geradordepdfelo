@@ -13,8 +13,8 @@ export async function GET() {
 
 export async function PUT(req: NextRequest) {
   try {
-    const { campo, valor } = await req.json()
-    const [result] = await promiseConnection.query(`UPDATE valoresSC SET ${campo} = ? WHERE id = 1`, [valor])
+    const { valorKM, valorDiaria } = await req.json()
+    const [result] = await promiseConnection.query(`UPDATE valoresSC SET valorKM = ?, valorDiaria = ? WHERE id = 1`, [valorKM, valorDiaria])
     if (result) {
       return new Response("Dados Atualizados!", { status: 200 })
     }
