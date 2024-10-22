@@ -1,11 +1,11 @@
 import { IPropostas } from "@/components/VisualizarPropostaSC";
 import axios from "axios";
-import React, { SetStateAction, ChangeEvent } from "react";
+import React, { SetStateAction, ChangeEvent, Dispatch } from "react";
 
 export interface Inputs {
   name: string;
   value: string | number | Date;
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onChange: (e: ChangeEvent<HTMLInputElement>, setValue?: Dispatch<SetStateAction<object>>) => void;
   placeholder: string;
   dica: string;
   type?: string;

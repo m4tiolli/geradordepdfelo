@@ -8,5 +8,9 @@ export const buttons = (router: AppRouterInstance) => [
   {
     label: "Serviço de Campo",
     action: () => router.push("/sc/variaveis")
+  },
+  {
+    label: "Departamentos",
+    action: () => router.push("/departamentos")
   }
 ]

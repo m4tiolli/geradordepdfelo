@@ -23,24 +23,21 @@ import {
   ButtonGroup,
   useDisclosure,
 } from '@chakra-ui/react'
-import { inputsVariaveisEF } from '@/mocks/InputsVarsEF'
 import Input from '@/components/Input'
+import { inputsVariaveisDepts } from '@/mocks/InputsVarsDepts'
 
 export interface Valores {
   id: number,
-  meses: number,
-  valor: number,
-  porcentagem: number,
-  implementacao: number
+  nome: string
 }
 
 function Variaveis() {
 
   const [values, setValues] = useState<Valores[]>([])
 
-  const [activeValue, setActiveValue] = useState<Valores>({ id: 0, meses: 0, valor: 0, porcentagem: 0, implementacao: 0 })
+  const [activeValue, setActiveValue] = useState<Valores>({ id: 0, nome: "" })
 
-  const [novoValue, setNovoValue] = useState<Valores>({ id: 0, meses: 0, valor: 0, porcentagem: 0, implementacao: 0 })
+  const [novoValue, setNovoValue] = useState<Valores>({ id: 0, nome: "" })
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -57,16 +54,16 @@ function Variaveis() {
   };
 
   useEffect(() => {
-    axios.get("/api/ef/valores")
+    axios.get("/api/departamentos")
       .then(response => setValues(response.data))
       .catch(err => console.error(err))
   }, [])
 
   const AtualizarValores = () => {
     setIsLoading(true)
-    axios.put("/api/ef/valores", activeValue)
+    axios.put("/api/departamentos", activeValue)
       .then(() => {
-        ShowToast({ type: "success", text: "Valores atualizados com sucesso!", options: { position: 'top-center' } });
+        ShowToast({ type: "success", text: "Departamento atualizado com sucesso!", options: { position: 'top-center' } });
         setIsLoading(false)
         onEditarClose()
         setTimeout(() => {
@@ -74,16 +71,16 @@ function Variaveis() {
         }, 2000);
       })
       .catch((err) => {
-        ShowToast({ type: "error", text: "Ocorreu um erro ao atualizar os dados, " + err, options: { position: 'top-center' } });
+        ShowToast({ type: "error", text: "Ocorreu um erro ao atualizar o departamento, " + err, options: { position: 'top-center' } });
         setIsLoading(false)
       })
   }
 
   const CadastrarValor = () => {
     setIsLoading(true)
-    axios.post("/api/ef/valores", novoValue)
+    axios.post("/api/departamentos", novoValue)
       .then(() => {
-        ShowToast({ type: "success", text: "Valores criados com sucesso!", options: { position: 'top-center' } });
+        ShowToast({ type: "success", text: "Departamento criado com sucesso!", options: { position: 'top-center' } });
         setIsLoading(false)
         onNovoClose()
         setTimeout(() => {
@@ -91,23 +88,23 @@ function Variaveis() {
         }, 2000);
       })
       .catch((err) => {
-        ShowToast({ type: "error", text: "Ocorreu um erro ao criar os dados, " + err, options: { position: 'top-center' } });
+        ShowToast({ type: "error", text: "Ocorreu um erro ao criar o departamento, " + err, options: { position: 'top-center' } });
         setIsLoading(false)
       })
   }
 
   const DeletarValor = (id: number) => {
     setIsLoading(true);
-    axios.delete("/api/ef/valores", {headers: {id: id}})
+    axios.delete("/api/departamentos", { headers: { id: id } })
       .then(() => {
-        ShowToast({ type: "success", text: "Valor deletado com sucesso!", options: { position: 'top-center' } });
+        ShowToast({ type: "success", text: "Departamento deletado com sucesso!", options: { position: 'top-center' } });
         setIsLoading(false)
         setTimeout(() => {
           window.location.reload()
         }, 2000);
       })
       .catch((err) => {
-        ShowToast({ type: "error", text: "Ocorreu um erro ao deletar os dados, " + err, options: { position: 'top-center' } });
+        ShowToast({ type: "error", text: "Ocorreu um erro ao deletar o departamento, " + err, options: { position: 'top-center' } });
         setIsLoading(false)
       })
   }
@@ -118,23 +115,17 @@ function Variaveis() {
     <div className='relative flex flex-col items-center justify-center gap-4 w-fit h-fit p-4 '>
       <TableContainer>
         <Table variant='simple'>
-          <TableCaption>Fatores financeiros para cálculo de valores</TableCaption>
+          <TableCaption>Departamentos de tomadores e vendedores</TableCaption>
           <Thead>
             <Tr>
-              <Th>Meses</Th>
-              <Th>Valor por KVA</Th>
-              <Th isNumeric>Conta mensal multiplicada por</Th>
-              <Th isNumeric>Tempo para implementação</Th>
+              <Th>Departamento</Th>
               <Th>Ação</Th>
             </Tr>
           </Thead>
           <Tbody>
             {values.map((value, index) => (
               <Tr key={index}>
-                <Td>{value.meses} meses</Td>
-                <Td>{value.valor} reais</Td>
-                <Td isNumeric>{value.porcentagem}%</Td>
-                <Td isNumeric>{value.implementacao} dias</Td>
+                <Td>{value.nome}</Td>
                 <Td><Button mr={'1rem'} onClick={() => { setActiveValue(value); onEditarOpen() }}>Editar</Button><Button colorScheme='red' onClick={() => DeletarValor(value.id)}>Excluir</Button></Td>
               </Tr>
             ))}
@@ -153,10 +144,10 @@ function Variaveis() {
           </ModalHeader>
           <ModalBody>
             <div className='flex flex-col items-center justify-center gap-5'>
-              {inputsVariaveisEF({ values: activeValue, onChange, setValue: setActiveValue as React.Dispatch<React.SetStateAction<object>> }).map((input, index) => (
+              {inputsVariaveisDepts({ values: activeValue, onChange, setValue: setActiveValue as React.Dispatch<React.SetStateAction<object>> }).map((input, index) => (
                 <div key={index} className='w-full'>
                   <p className='text-md font-semibold text-azul'>{input.dica}</p>
-                  <Input {...input} color='#38457a' type='number' />
+                  <Input {...input} color='#38457a' />
                 </div>
               ))}
             </div>
@@ -174,15 +165,15 @@ function Variaveis() {
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
-            Criar novo fator financeiro
+            Criar novo Departamento
             <ModalCloseButton onClick={onNovoClose} />
           </ModalHeader>
           <ModalBody>
             <div className='flex flex-col items-center justify-center gap-5'>
-              {inputsVariaveisEF({ values: novoValue, onChange, setValue: setNovoValue as React.Dispatch<React.SetStateAction<object>> }).map((input, index) => (
+              {inputsVariaveisDepts({ values: novoValue, onChange, setValue: setNovoValue as React.Dispatch<React.SetStateAction<object>> }).map((input, index) => (
                 <div key={index} className='w-full'>
                   <p className='text-md font-semibold text-azul'>{input.dica}</p>
-                  <Input {...input} color='#38457a' type='number' />
+                  <Input {...input} color='#38457a' />
                 </div>
               ))}
             </div>

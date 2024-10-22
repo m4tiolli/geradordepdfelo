@@ -9,7 +9,7 @@ function SelecionarProposta() {
   return (
     <main className="flex flex-col items-center gap-4 relative">
       <h1 className="font-semibold text-2xl text-azul">
-        Selecionar Modelo de Proposta
+        Selecionar Opção
       </h1>
       <div className="grid grid-cols-2 grid-rows-2 gap-2">
         {btns.map((btn, index) => (
