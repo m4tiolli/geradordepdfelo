@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
   try {
-    const query = `SELECT id, nome, departamento, telefone1, telefone2, email, administrador FROM usuario WHERE ativo = FALSE`
+    const query = `SELECT id, nome, departamento, telefone1, telefone2, email, administrador FROM usuario WHERE ativo = TRUE`
     const [rows] = await promiseConnection.query(query)
     return NextResponse.json(rows)
   } catch (erro) {
