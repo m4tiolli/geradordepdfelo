@@ -9,7 +9,7 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
   }
 
   try {
-    const resposta = await promiseConnection.query('DELETE FROM usuario WHERE id = ?', [userId]);
+    const resposta = await promiseConnection.query('UPDATE usuario SET ativo = FALSE WHERE id = ?', [userId]);
     return NextResponse.json(resposta)
   } catch (error) {
     return NextResponse.json({ error: error }, { status: 500 })
